@@ -14,28 +14,15 @@ module Sinatra
       # merge app-level options
       options = self.class.send(engine).merge(options) if self.class.respond_to?(engine)
 
-      # extract generic options
-      layout = options.delete(:layout)
-      layout = :layout if layout.nil? || layout == true
       views = options.delete(:views) || self.class.views || "./views"
-      locals = options.delete(:locals) || locals || {}
 
       # render template
       data, options[:filename], options[:line] = lookup_template(engine, template, views)
-      output = __send__("render_#{engine}", template, data, options, locals)
 
-      # render layout
-      if layout
-        data, options[:filename], options[:line] = lookup_layout(engine, layout, views)
-        if data
-          output = __send__("render_#{engine}", layout, data, options, locals) { output }
-        end
-      end
-
-      output
+      __send__("render_#{engine}", template, data, options)
     end
     
-    def render_ruhl(template, data, options, locals, &block)
+    def render_ruhl(template, data, options)
       ::Ruhl::Engine.new(data, options).render(self)
     end
   end
