@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Andrew Stone"]
-  s.date = %q{2009-10-06}
+  s.date = %q{2009-10-07}
   s.description = %q{Make your HTML dynamic with the addition of a ruby attribute.}
   s.email = %q{andy@stonean.com}
   s.extra_rdoc_files = [
@@ -27,9 +27,11 @@ Gem::Specification.new do |s|
      "ruhl.gemspec",
      "spec/html/basic.html",
      "spec/html/fragment.html",
+     "spec/html/if.html",
      "spec/html/layout.html",
      "spec/html/main_with_sidebar.html",
      "spec/html/medium.html",
+     "spec/html/render_if.html",
      "spec/html/seo.html",
      "spec/html/sidebar.html",
      "spec/rcov.opts",
