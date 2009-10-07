@@ -154,6 +154,70 @@ of the calling node.
 
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+:: Conditional display of block (_render_if)::
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+<html>
+  <head>
+    <title>This is a title template</title>
+  </head>
+  <body>
+    <h1>This is the header template</h1>
+    <div data-ruhl="_render_if: has_users?">
+      <table>
+        <thead>
+          <tr>
+            <td>First Name</td>
+            <td>Last Name</td>
+            <td>Email</td>
+          </tr>
+        </thead>
+        <tr data-ruhl="_collection: user_list">
+          <td data-ruhl="first_name">Andrew</td>
+          <td data-ruhl="last_name">Stone</td>
+          <td data-ruhl="email">andy@stonean.com</td>
+        </tr>
+      </table>
+    </div>
+    </ul>
+  </body>
+</html>
+
+if has_users? returns false then the div (including it's contents) are not shown
+on output.
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+:: Conditional display of tag (_if)::
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+<html>
+  <head>
+    <title>This is a title template</title>
+  </head>
+  <body>
+    <h1>This is the header template</h1>
+    <table>
+      <thead>
+        <tr>
+          <td>First Name</td>
+          <td>Last Name</td>
+          <td>Email</td>
+        </tr>
+      </thead>
+      <tr data-ruhl="_collection: user_list">
+        <td data-ruhl="first_name">Andrew</td>
+        <td data-ruhl="last_name">Stone</td>
+        <td data-ruhl="_if: email">andy@stonean.com</td>
+      </tr>
+    </table>
+    </ul>
+  </body>
+</html>
+
+if email == nil  then the td is not shown.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 :: Notes ::
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
