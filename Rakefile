@@ -19,7 +19,7 @@ begin
   Jeweler::Tasks.new do |gemspec|
     gemspec.name = "ruhl"
     gemspec.summary = "Ruby Hypertext Language"
-    gemspec.description = "Make your HTML dynamic with the addition of a ruby attribute."
+    gemspec.description = "Make your HTML dynamic with the addition of a data-ruhl attribute."
     gemspec.email = "andy@stonean.com"
     gemspec.homepage = "http://github.com/stonean/ruhl"
     gemspec.authors = ["Andrew Stone"]
