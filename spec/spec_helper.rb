@@ -17,7 +17,7 @@ end
 class TestUser
   attr_accessor :first_name, :last_name, :email
 
-  def initialize(first, last , email)
+  def initialize(first, last , email = nil)
     @first_name = first
     @last_name  = last
     @email = email

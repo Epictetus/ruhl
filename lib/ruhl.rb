@@ -96,6 +96,17 @@ module Ruhl
             tag.inner_html = render_partial(tag, value)
           elsif attribute  == "_collection"
             render_collection(tag, value)
+          elsif attribute  == "_if"
+            contents = execute_ruby(tag, value)
+            if contents
+              tag.inner_html = contents
+            else
+              tag.remove
+            end
+          elsif attribute  == "_render_if"
+            unless execute_ruby(tag, value)
+              tag.remove
+            end
           else
             tag[attribute] = execute_ruby(tag, value)
           end

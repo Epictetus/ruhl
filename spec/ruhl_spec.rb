@@ -29,7 +29,8 @@ def user_list(tag = nil)
     TestUser.new('Jane', 'Doe', 'jane@stonean.com'),
     TestUser.new('John', 'Joe', 'john@stonean.com'),
     TestUser.new('Jake', 'Smo', 'jake@stonean.com'),
-    TestUser.new('Paul', 'Tin', 'paul@stonean.com')
+    TestUser.new('Paul', 'Tin', 'paul@stonean.com'),
+    TestUser.new('NoMail', 'Man')
   ]
 end
 
@@ -104,6 +105,56 @@ describe Ruhl do
 
     it "should replace sidebar with partial contents" do
       doc = create_doc
+    end
+  end
+
+  describe "if.html" do
+    before do
+      @html = File.read html(:if)
+      @doc = create_doc
+    end
+
+    it "first data row should equal first user " do
+      table = @doc.xpath('/html/body/table/tr//td')
+      table.children[0].to_s.should == "Jane"
+      table.children[1].to_s.should == "Doe"
+      table.children[2].to_s.should == "jane@stonean.com"
+    end
+
+    it "last data row should equal last user " do
+      table = @doc.xpath('/html/body/table/tr//td')
+      table.children[12].to_s.should == "NoMail"
+      table.children[13].to_s.should == "Man"
+      table.children[14].should == nil
+    end
+  end
+
+  describe "render if.html" do
+    it "table should not render" do
+      def has_users?(tag = nil)
+        false
+      end
+
+      @html = File.read html(:render_if)
+      @doc = create_doc
+      nodes = @doc.xpath('/html/body//*')
+      nodes.children.length.should == 1
+      nodes.children.to_s.should == "This is the header template"
+    end
+
+    it "table shouldrender" do
+      def has_users?(tag = nil)
+        true
+      end
+
+      @html = File.read html(:render_if)
+      @doc = create_doc
+      nodes = @doc.xpath('/html/body//*')
+      nodes.children.length.should > 1
+
+      table = @doc.xpath('/html/body/div/table/tr//td')
+      table.children[12].to_s.should == "NoMail"
+      table.children[13].to_s.should == "Man"
     end
   end
 end
