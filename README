@@ -5,8 +5,8 @@ RuHL (Ruby Hypertext Language)
 :: What? ::
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-RuHL parses HTML (using Nokogiri) and looks for the data-ruhl attribute. It will
-simply send the method to the calling scope.  For instance:
+RuHL parses HTML (using Nokogiri) and by using a data-ruhl attribute, makes
+the contents dynamic!
 
 Let's say you have the following HTML in a file called ('hello_world.ruhl')
 
