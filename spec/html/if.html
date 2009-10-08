@@ -4,7 +4,7 @@
   </head>
   <body>
     <h1>This is the header template</h1>
-    <table>
+    <table data-ruhl="_if: users?">
       <thead>
         <tr>
           <td>First Name</td>
@@ -18,6 +18,6 @@
         <td data-ruhl="_if: email">andy@stonean.com</td>
       </tr>
     </table>
-    </ul>
+    <p data-ruhl="_unless: users?, no_users_message"/>
   </body>
 </html>

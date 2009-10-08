@@ -90,24 +90,19 @@ module Ruhl
         attribute, value = pair.split(':')
         
         if value.nil?
-          tag.inner_html = execute_ruby(tag, attribute)
+          tag.inner_html = execute_ruby(tag, attribute.strip)
         else
           value.strip!
-          if attribute  == "_partial"
+          
+          case attribute
+          when "_partial"
             tag.inner_html = render_partial(tag, value)
-          elsif attribute  == "_collection"
+          when "_collection"
             render_collection(tag, value)
-          elsif attribute  == "_if"
-            contents = execute_ruby(tag, value)
-            if contents
-              tag.inner_html = contents
-            else
-              tag.remove
-            end
-          elsif attribute  == "_render_if"
-            unless execute_ruby(tag, value)
-              tag.remove
-            end
+          when "_if" 
+            return unless process_if(tag, value)
+          when "_unless"
+            return if process_unless(tag, value)
           else
             tag[attribute] = execute_ruby(tag, value)
           end
@@ -115,6 +110,28 @@ module Ruhl
       end
     end
      
+    def process_if(tag, value)
+      contents = execute_ruby(tag, value)
+      if contents 
+        tag.inner_html = contents unless contents == true
+        true
+      else
+        tag.remove
+        false
+      end
+    end
+
+    def process_unless(tag, value)
+      contents = execute_ruby(tag, value)
+      if contents
+        tag.remove
+        true
+      else
+        tag.inner_html = contents unless contents == false
+        false
+      end
+    end
+
     def execute_ruby(tag, code)
       unless code == '_render_'
         if local_object && local_object.respond_to?(code)
