@@ -1,3 +1,5 @@
+require 'ruhl'
+
 module Ruhl
   class Plugin < ActionView::TemplateHandler
 
@@ -5,12 +7,13 @@ module Ruhl
       @action_view = action_view
     end
     
-    def render(template, options)
+    def render(template, options = {})
       layout = @action_view.controller.send(:active_layout)
 
-      puts "==========> @action_view: #{@action_view.controller.response.inspect}"
-      puts "==========> template: #{template.inspect}"
-      puts "==========> options: #{options.inspect}"
+      options[:layout]        = layout.filename
+      options[:layout_source] = layout.source
+
+      Ruhl::Engine.new(template.source, options).render(@action_view)
     end
   end
 end
