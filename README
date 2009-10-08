@@ -70,10 +70,15 @@ _render_    - This is used in your layout and lets rule know where to inject
 
 _partial    - Path to a partial file.  RuHL must be able to find/read this file.
 
-_if         - If the method returns nil, the tag will not be included on output.
+_if         - If the method returns true, processing will continue.
+              If the method returns a value other than true, the inner_html
+                of the tag will be set to that value.
+              If the method returns false or nil, processing will halt and
+                the tag will not be included on output.
 
-_unless     - If the method does not return nil, the tag will not be 
-              included on output.
+_unless     - If the method returns true, processing will halt and the tag
+              will not included on output.
+              If the method returns false, processing will continue. 
             
 _collection - RuHL expects the method reference to return an array of objects.
               RuHL will iteratate over the collection and render the contents

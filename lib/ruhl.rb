@@ -127,7 +127,6 @@ module Ruhl
         tag.remove
         true
       else
-        tag.inner_html = contents unless contents == false
         false
       end
     end
