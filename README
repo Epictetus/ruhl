@@ -1,27 +1,109 @@
-Ruhl (Ruby Hypertext Language)
+RuHL (Ruby Hypertext Language)
 
-This project is here to flesh out an idea.  What I want is to have developers 
-work with HTML and with the simple addition of a 'data-ruhl' attribute, convert it 
-to a dynamic page.
-
-At no time in the dev process would the view be unviewable in a browser.  
-The view could actually retain the original template data the designer used 
-because this replaces the content.  I think this is a nice plus.
-
-
-Notes (use cases) for me to remember:
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-:: Basic Use ::
+:: What? ::
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-<h1 data-ruhl="page_header">
+RuHL parses HTML (using Nokogiri) and looks for the data-ruhl attribute. It will
+simply send the method to the calling scope.  For instance:
 
-Method :page_header would know how to represent itself in the context of 
-the h1 element.
+Let's say you have the following HTML in a file called ('hello_world.ruhl')
 
-The Ruby executed would replace the content of the element it was being 
-called on.  
+<html>
+  <body>
+    <p data-ruhl="say_hello"/>
+  </body>
+</html>
+
+And you have the following method available to self:
+
+def say_hello
+  "Hello World"
+end
+
+If you call
+
+RuHL::Engine.new(File.read('hello_world.ruhl')).render(self)
+
+It will return:
+
+<html>
+  <body>
+    <p>Hello World</p>
+  </body>
+</html>
+
+Notice that it removes the data-ruhl attribute.
+
+
+You can pass an options hash to RuHL:
+  RuHL::Engine.new(File.read('hello_world.ruhl'), options).render(self)
+
+Right now, RuHL knows the following options:
+
+  :layout         =>  This is the file name of the layout 
+
+  :layout_source  =>  If the framework (like Rails) has already read the file,   
+                      pass the contents through so RuHL doesn't have to reread
+                      the file.
+
+                      If you don't pass :layout_source, RuHL must be able to
+                      find/read :layout
+
+  :local_object   =>  If you are rendering a show page for @person, pass the
+                      @person object into RuHL.  RuHL will first try to call
+                      the methods against the local_object then try the scope.
+
+                      For example:
+                        <li data-ruhl="first_name">
+
+                      RuHL will first try @person.first_name. 
+
+                      
+
+There are some special methods defined by RuHL (examples follow):
+
+_render_    - This is used in your layout and lets rule know where to inject
+              the rendered sub content.
+
+_partial    - Path to a partial file.  RuHL must be able to find/read this file.
+
+_if         - If the method returns nil, the tag will not be included on output.
+            
+_render_if  - If the method returns false, the tag will not be included on output.
+
+_collection - RuHL expects the method reference to return an array of objects.
+              RuHL will iteratate over the collection and render the contents
+              of the tag agains the collection item. (example below)
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+:: Rails ::
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+In your config/environment.rb :
+
+  config.gem 'ruhl', :lib => 'ruhl/rails'
+
+Your filenames should end in .ruhl ('show.html.ruhl')
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+:: Sinatra ::
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+require 'ruhl/sinatra'
+
+You can then do:
+
+get '/' do
+  ruhl(:index, :layout => path_to_layout)
+end
+
+*******************************************************************************
+*
+* EXAMPLES 
+*
+*******************************************************************************
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 :: Replacing attribute values ::
@@ -96,12 +178,12 @@ Fragment:
 
 To use:
 
-Ruhl::Engine.new(File.read(fragment), :layout => path_to_layout).render(self)
+RuHL::Engine.new(File.read(fragment), :layout => path_to_layout).render(self)
 
 Returns the expected result of parsed Layout w/ parsed Fragment. 
 
 Note the use of the _render_ method.  This is a 'special' method that 
-Ruhl uses to inject the results of the parsed fragment into the layout.
+RuHL uses to inject the results of the parsed fragment into the layout.
 
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -143,12 +225,12 @@ Sidebar:
 
 To use:
 
-Ruhl::Engine.new(File.read(path_to_main)).render(self)
+RuHL::Engine.new(File.read(path_to_main)).render(self)
 
 Returns the expected result of parsed Main with sidebar div contents 
 replaced with parsed sidebar partial contents.  
 
-Note the use of the _partial key.  This is a 'special' key that Ruhl 
+Note the use of the _partial key.  This is a 'special' key that RuHL 
 uses to inject the results of the parsed partial into the contents
 of the calling node.
 
