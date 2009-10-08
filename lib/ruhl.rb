@@ -5,10 +5,11 @@ require 'ruhl/errors'
 
 module Ruhl
   class Engine
-    attr_reader :document, :scope, :layout, :local_object
+    attr_reader :document, :scope, :layout, :layout_source, :local_object
 
     def initialize(html, options = {})
-      @local_object = options[:local_object]
+      @local_object   = options[:local_object]
+      @layout_source  = options[:layout_source]
 
       if @layout = options[:layout]
         raise LayoutNotFoundError.new(@layout) unless File.exists?(@layout)
@@ -44,7 +45,7 @@ module Ruhl
     private
 
     def render_with_layout
-      render_file( File.read(@layout) ) 
+      render_file( @layout_source || File.read(@layout) ) 
     end
 
     def render_partial(tag, code)
