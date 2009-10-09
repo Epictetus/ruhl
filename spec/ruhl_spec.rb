@@ -126,6 +126,18 @@ describe Ruhl do
       end
     end
   end
+
+  describe "loop.html" do
+    before do
+      @html = File.read html(:loop)
+    end
+
+    it "will be injected into layout.html" do
+      doc  = create_doc( html(:loop) )
+      options = doc.xpath('/html/body/select//option')
+      options.children.length.should == @co.states_for_select.length
+    end
+  end
 end
 
 

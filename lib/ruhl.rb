@@ -25,7 +25,7 @@ module Ruhl
     def render(current_scope)
       set_scope(current_scope)
 
-      parse_doc(@document)
+      parse_doc(document)
 
       if @layout
         render_with_layout 
@@ -54,9 +54,10 @@ module Ruhl
       render_file( File.read(file) )
     end
 
-    def render_collection(tag, code)
+    def render_collection(tag, code, actions = nil)
       results = execute_ruby(tag, code)
 
+      tag['data-ruhl'] = actions if actions.to_s.strip.length > 0
       html = tag.to_html
 
       new_content = results.collect do |item|
@@ -73,7 +74,7 @@ module Ruhl
     end
 
     def parse_doc(doc)
-      if (nodes = doc.xpath('//*[@data-ruhl][1]')).empty?
+      if (nodes = doc.xpath('*[@data-ruhl][1]')).empty?
         nodes = doc.search('*[@data-ruhl]')
       end
 
@@ -86,7 +87,8 @@ module Ruhl
     end
 
     def process_attribute(tag, code)
-      code.split(',').each do |pair|
+      actions = code.split(',')
+      actions.dup.each_with_index do |pair, ndx|
         attribute, value = pair.split(':')
         
         if value.nil?
@@ -98,7 +100,9 @@ module Ruhl
           when "_partial"
             tag.inner_html = render_partial(tag, value)
           when "_collection"
-            render_collection(tag, value)
+            actions.delete_at(ndx)
+            render_collection(tag, value, actions.join(','))
+            return
           when "_if" 
             return unless process_if(tag, value)
           when "_unless"
@@ -141,6 +145,15 @@ module Ruhl
       else
         _render_
       end
+    rescue NoMethodError => e
+      puts <<CONTEXT
+Context:
+  tag           : #{tag.inspect}
+  code          : #{code.inspect}
+  local_object  : #{local_object.inspect}
+  scope         : #{scope.inspect}
+CONTEXT
+      raise e
     end
 
     def set_scope(current_scope)
