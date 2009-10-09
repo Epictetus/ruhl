@@ -5,7 +5,7 @@
 
 Gem::Specification.new do |s|
   s.name = %q{ruhl}
-  s.version = "0.8.1"
+  s.version = "0.8.2"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Andrew Stone"]
@@ -29,6 +29,7 @@ Gem::Specification.new do |s|
      "spec/html/fragment.html",
      "spec/html/if.html",
      "spec/html/layout.html",
+     "spec/html/loop.html",
      "spec/html/main_with_sidebar.html",
      "spec/html/medium.html",
      "spec/html/seo.html",
