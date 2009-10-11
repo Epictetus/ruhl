@@ -26,8 +26,14 @@ class TestUser
     @last_name  = last
     @email = email
   end
+
 end
  
+def user(tag = nil)
+  TestUser.new('Jane', 'Doe', 'jane@stonean.com')
+end
+
+
 class ContextObject
   def generate_h1(tag = nil)
     "data from presenter"     
@@ -51,6 +57,10 @@ class ContextObject
 
   def sidebar_partial(tag = nil)
     html(:sidebar)
+  end
+
+  def form_partial(tag = nil)
+    html(:form)
   end
 
   def user_list(tag = nil)

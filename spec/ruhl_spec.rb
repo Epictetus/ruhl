@@ -1,7 +1,5 @@
 require File.join(File.dirname(__FILE__), 'spec_helper')
 
-
-
 describe Ruhl do
   before do
     @co = ContextObject.new
@@ -76,6 +74,16 @@ describe Ruhl do
 
     it "should replace sidebar with partial contents" do
       doc = create_doc
+      html = %{<div id="sidebar">
+<h3>Real Sidebarlinks</h3>
+<ul>
+<li><a href="#">Real Link 1</a></li>
+  <li><a href="#">Real Link 2</a></li>
+  <li><a href="#">Real Link 3</a></li>
+  <li><a href="#">Real Link 4</a></li>
+</ul>
+</div>}
+      doc.xpath('//div[@id="sidebar"]').to_s.should == html
     end
   end
 
@@ -133,9 +141,20 @@ describe Ruhl do
     end
 
     it "will be injected into layout.html" do
-      doc  = create_doc( html(:loop) )
+      doc  = create_doc
       options = doc.xpath('/html/body/select//option')
       options.children.length.should == @co.states_for_select.length
+    end
+  end
+
+  describe "form.html" do
+    before do
+      @html = File.read html(:main_with_form)
+    end
+
+    it "will be injected into layout.html" do
+      doc  = create_doc
+      puts doc.inspect
     end
   end
 end

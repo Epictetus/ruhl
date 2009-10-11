@@ -5,7 +5,8 @@ require 'ruhl/errors'
 
 module Ruhl
   class Engine
-    attr_reader :document, :scope, :layout, :layout_source, :local_object
+    attr_reader :document, :scope, :layout, :layout_source, 
+                :local_object, :block_object
 
     def initialize(html, options = {})
       @local_object   = options[:local_object]
@@ -51,6 +52,7 @@ module Ruhl
     def render_partial(tag, code)
       file = execute_ruby(tag, code)
       raise PartialNotFoundError.new(file) unless File.exists?(file)
+
       render_file( File.read(file) )
     end
 
@@ -83,6 +85,7 @@ module Ruhl
       tag = nodes.first
       code = tag.remove_attribute('data-ruhl') 
       process_attribute(tag, code.value)
+
       parse_doc(doc)
     end
 
@@ -91,33 +94,46 @@ module Ruhl
       actions.dup.each_with_index do |pair, ndx|
         attribute, value = pair.split(':')
         
+        attribute.strip!
+
         if value.nil?
-          tag.inner_html = execute_ruby(tag, attribute.strip)
+          results = execute_ruby(tag, attribute)
+          process_results(tag, results)
         else
           value.strip!
           
-          case attribute
-          when "_partial"
-            tag.inner_html = render_partial(tag, value)
-          when "_collection"
-            actions.delete_at(ndx)
-            render_collection(tag, value, actions.join(','))
-            return
-          when "_if" 
-            return unless process_if(tag, value)
-          when "_unless"
-            return if process_unless(tag, value)
-          else
+          unless attribute =~ /^_/
             tag[attribute] = execute_ruby(tag, value)
+          else
+            case attribute
+            when "_block_object"
+              @block_object = execute_ruby(tag, value) 
+              @tag_block = tag
+            when "_partial"
+              tag.inner_html = render_partial(tag, value)
+            when "_collection"
+              actions.delete_at(ndx)
+              render_collection(tag, value, actions.join(','))
+              return
+            when "_if" 
+              return unless process_if(tag, value)
+            when "_unless"
+              return if process_unless(tag, value)
+            end
           end
         end
+      end
+
+      if @tag_block == tag
+        @tag_block    = nil
+        @block_object = nil
       end
     end
      
     def process_if(tag, value)
       contents = execute_ruby(tag, value)
       if contents 
-        tag.inner_html = contents unless contents == true
+        process_results(tag, contents) unless contents == true
         true
       else
         tag.remove
@@ -135,10 +151,26 @@ module Ruhl
       end
     end
 
+    def process_results(tag, results)
+      if results.is_a?(Hash)
+        results.each do |key, value|
+          if key == :inner_html
+            tag.inner_html = value
+          else
+            tag[key.to_s] = value
+          end
+        end
+      else
+        tag.inner_html = results
+      end
+    end
+
     def execute_ruby(tag, code)
       unless code == '_render_'
         if local_object && local_object.respond_to?(code)
           local_object.send(code)
+        elsif block_object && block_object.respond_to?(code)
+          block_object.send(code)
         else
           scope.send(code, tag)
         end
@@ -151,6 +183,7 @@ Context:
   tag           : #{tag.inspect}
   code          : #{code.inspect}
   local_object  : #{local_object.inspect}
+  block_object  : #{block_object.inspect}
   scope         : #{scope.inspect}
 CONTEXT
       raise e
