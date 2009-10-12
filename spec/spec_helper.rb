@@ -19,14 +19,19 @@ end
 
 
 class TestUser
-  attr_accessor :first_name, :last_name, :email
+  attr_accessor :id, :first_name, :last_name, :email
 
   def initialize(first, last , email = nil)
     @first_name = first
     @last_name  = last
     @email = email
+    @id = rand(100)
   end
 
+  def radio_input(tag = nil)
+    { :inner_html => first_name, :id => "user_#{id.to_s}", 
+      :name => "user[id]", :value => last_name.downcase}
+  end
 end
  
 def user(tag = nil)

@@ -150,11 +150,35 @@ describe Ruhl do
   describe "form.html" do
     before do
       @html = File.read html(:main_with_form)
+      @doc  = create_doc
     end
 
-    it "will be injected into layout.html" do
+    it "first name will be set" do
+      @doc.xpath('/html/body/div//input')[0]['value'].should == "Jane"
+    end
+
+    it "last name will be set" do
+      @doc.xpath('/html/body/div//input')[1]['value'].should == "Doe"
+    end
+
+    it "email will be set" do
+      @doc.xpath('/html/body/div//input')[2]['value'].should == "jane@stonean.com"
+    end
+  end
+
+  describe "hash.html" do
+    before do
+      @html = File.read html(:hash)
+    end
+
+    it "have radio inputsi with proper attributes" do
       doc  = create_doc
-      puts doc.inspect
+      nodes = doc.xpath('/html/body/label//input')
+      nodes[0]['value'].should == 'doe'
+      nodes[1]['value'].should == 'joe'
+      nodes[2]['value'].should == 'smo'
+      nodes[3]['value'].should == 'tin'
+      nodes[4]['value'].should == 'man'
     end
   end
 end
