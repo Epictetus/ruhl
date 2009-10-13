@@ -10,13 +10,14 @@ module Ruhl
 
     def initialize(html, options = {})
       @local_object   = options[:local_object]
+      @block_object   = options[:block_object]
       @layout_source  = options[:layout_source]
 
       if @layout = options[:layout]
         raise LayoutNotFoundError.new(@layout) unless File.exists?(@layout)
       end
 
-      if @layout || @local_object
+      if @layout || @local_object || @block_object
         @document = Nokogiri::HTML.fragment(html)
       else
         @document = Nokogiri::HTML(html)
@@ -69,6 +70,11 @@ module Ruhl
       tag.swap(new_content)
     end
 
+    def render_block(tag, code)
+      bo = execute_ruby(tag, code) 
+      Ruhl::Engine.new(tag.inner_html, :block_object => bo).render(scope)
+    end
+
     def render_file(contents)
       doc = Nokogiri::HTML( contents ) 
       parse_doc(doc)
@@ -107,8 +113,7 @@ module Ruhl
           else
             case attribute
             when "_use"
-              @block_object = execute_ruby(tag, value) 
-              @tag_block = tag
+              tag.inner_html =  render_block(tag, value)
             when "_partial"
               tag.inner_html = render_partial(tag, value)
             when "_collection"
@@ -122,11 +127,6 @@ module Ruhl
             end
           end
         end
-      end
-
-      if @tag_block == tag
-        @tag_block    = nil
-        @block_object = nil
       end
     end
      

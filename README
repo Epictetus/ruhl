@@ -370,6 +370,8 @@ if users? == false then the "No Users were found" message appears.
 
 The table row information will be replace with the current_user details.
 
+*Note: _use can not be used with _partial as it replaces the inner_html
+
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 :: Notes ::
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

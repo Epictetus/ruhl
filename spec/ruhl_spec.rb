@@ -181,6 +181,26 @@ describe Ruhl do
       nodes[4]['value'].should == 'man'
     end
   end
+
+  
+  describe "use.html" do
+    before do
+      @html = File.read html(:use)
+      @doc  = create_doc
+    end
+
+    it "first name will be set" do
+      @doc.xpath('/html/body/div//input')[0]['value'].should == "Jane"
+    end
+
+    it "last name will be set" do
+      @doc.xpath('/html/body/div//input')[1]['value'].should == "Doe"
+    end
+
+    it "email will be set" do
+      @doc.xpath('/html/body/div//input')[2]['value'].should == "jane@stonean.com"
+    end
+  end
 end
 
 
