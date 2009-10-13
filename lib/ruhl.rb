@@ -106,7 +106,7 @@ module Ruhl
             tag[attribute] = execute_ruby(tag, value)
           else
             case attribute
-            when "_block_object"
+            when "_use"
               @block_object = execute_ruby(tag, value) 
               @tag_block = tag
             when "_partial"
@@ -172,7 +172,7 @@ module Ruhl
         elsif block_object && block_object.respond_to?(code)
           block_object.send(code)
         else
-          scope.send(code, tag)
+          scope.send(code)
         end
       else
         _render_

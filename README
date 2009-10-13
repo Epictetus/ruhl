@@ -84,6 +84,8 @@ _collection - RuHL expects the method reference to return an array of objects.
               RuHL will iteratate over the collection and render the contents
               of the tag agains the collection item. (example below)
 
+_use        - The object returned is used within the scope of the tag. 
+
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 :: Rails ::
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -338,15 +340,43 @@ if email.nil?  then the td is not shown.
 if users? == false then the "No Users were found" message appears.
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+:: Scope object to tag block (_use)::
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+<html>
+  <head>
+    <title>My Account</title>
+  </head>
+  <body>
+    <div data-ruhl="_use: current_user">
+      <h1> Editing <span data-ruhl="full_name"/></h1>
+      <table> 
+        <thead>
+          <tr>
+            <td>First Name</td>
+            <td>Last Name</td>
+            <td>Email</td>
+          </tr>
+        </thead>
+        <tr>
+          <td data-ruhl="first_name">Andrew</td>
+          <td data-ruhl="last_name">Stone</td>
+          <td data-ruhl="_if: email">andy@stonean.com</td>
+        </tr>
+      </table>
+    </div>
+  </body>
+</html>
+
+The table row information will be replace with the current_user details.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 :: Notes ::
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 * No eval (I don't think eval is evil, it's just not the way this works)
 
 * The data-ruhl attribute is always removed from the output.
-
-* Each method called must accept a tag parameter.  
-    e.g def page_header(tag)
 
 * Since it's just HTML, syntax highlighting is built-in.  
   For vim, just add this to your ~/.vimrc:
