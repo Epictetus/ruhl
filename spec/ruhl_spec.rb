@@ -182,7 +182,6 @@ describe Ruhl do
     end
   end
 
-  
   describe "use.html" do
     before do
       @html = File.read html(:use)
@@ -201,17 +200,16 @@ describe Ruhl do
       @doc.xpath('/html/body/div//input')[2]['value'].should == "jane@stonean.com"
     end
   end
-
-  describe "collection_of_strings.html" do
+  
+  describe "when no method" do
     before do
-      @html = File.read html(:collection_of_strings)
+      @html = "<p data-ruhl='nonexistant_method'>I am bad</p>"#File.read html(:debug)
     end
-
-    it "will have the string values in the li's" do
-      doc  = create_doc
-      puts doc.to_s
+    it 'should complain' do
+      lambda{ @doc  = create_doc }.should raise_error(NoMethodError)
     end
   end
+      
 end
 
 
