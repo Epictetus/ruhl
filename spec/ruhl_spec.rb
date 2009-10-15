@@ -171,7 +171,7 @@ describe Ruhl do
       @html = File.read html(:hash)
     end
 
-    it "have radio inputsi with proper attributes" do
+    it "have radio inputs with proper attributes" do
       doc  = create_doc
       nodes = doc.xpath('/html/body/label//input')
       nodes[0]['value'].should == 'doe'
@@ -199,6 +199,17 @@ describe Ruhl do
 
     it "email will be set" do
       @doc.xpath('/html/body/div//input')[2]['value'].should == "jane@stonean.com"
+    end
+  end
+
+  describe "collection_of_strings.html" do
+    before do
+      @html = File.read html(:collection_of_strings)
+    end
+
+    it "will have the string values in the li's" do
+      doc  = create_doc
+      puts doc.to_s
     end
   end
 end

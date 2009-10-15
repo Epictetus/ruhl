@@ -141,3 +141,7 @@ class ContextObject
   end
 
 end
+
+def points_of_interest
+  [ "Object oriented", "dynamic", "mixins", "blocks", "open source"]
+end

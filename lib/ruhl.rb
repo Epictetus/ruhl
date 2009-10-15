@@ -60,11 +60,19 @@ module Ruhl
     def render_collection(tag, code, actions = nil)
       results = execute_ruby(tag, code)
 
-      tag['data-ruhl'] = actions if actions.to_s.strip.length > 0
-      html = tag.to_html
+      actions = actions.to_s.strip
 
+      tag['data-ruhl'] = actions if actions.length > 0
+      html = tag.to_html
+      
       new_content = results.collect do |item|
-        Ruhl::Engine.new(html, :local_object => item).render(scope)
+        if actions.length == 0 && tag.children.length == 0
+          t = tag.dup
+          t.inner_html = item.to_s
+          t
+        else
+          Ruhl::Engine.new(html, :local_object => item).render(scope)
+        end
       end.to_s
 
       tag.swap(new_content)
@@ -161,7 +169,7 @@ module Ruhl
           end
         end
       else
-        tag.inner_html = results
+        tag.inner_html = results.to_s
       end
     end
 
