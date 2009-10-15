@@ -207,39 +207,39 @@ describe Ruhl do
       @doc  = create_doc
     end
 
-    describe "first test" do
+    describe "with no nested data-ruhls or other actions" do
       it "will have 5 line items" do
-        @doc.xpath('/html/body//ul')[0].children.length.should == 10
+        @doc.xpath("/html/body//ul[@id='call-to_s']").first.children.length.should == 10
       end
 
       it "will have correct content" do
-        @doc.xpath('/html/body/ul//li')[0].inner_html.should == "Object oriented"
+        @doc.xpath("/html/body/ul[@id='call-to_s']//li").first.inner_html.should == "Object oriented"
       end
     end
 
-    describe "second test" do
+    describe "with a nested data-ruhl" do
       it "will have 5 line items" do
-        @doc.xpath('/html/body//ul')[0].children.length.should == 10
+        @doc.xpath("/html/body//ul[@id='call-upcase']").first.children.length.should == 10
       end
 
       it "will have correct content" do
-        @doc.xpath('/html/body/ul/li//span')[0].inner_html.
-          should == "Object oriented"
+        @doc.xpath("/html/body/ul[@id='call-upcase']/li//span").first.inner_html.
+          should == "OBJECT ORIENTED"
       end
     end
 
-    describe "third test" do
+    describe "with an additional action" do
       it "will have 5 line items" do
-        @doc.xpath('/html/body//ul')[0].children.length.should == 10
+        @doc.xpath("/html/body//ul[@id='call-reverse']").first.children.length.should == 10
       end
 
       it "will have correct content" do
-        @doc.xpath('/html/body/ul//li')[10].inner_html.
+        @doc.xpath("/html/body/ul[@id='call-reverse']//li").first.inner_html.
           should == "detneiro tcejbO"
       end
 
       it "last item will have correct content" do
-        @doc.xpath('/html/body/ul//li')[14].inner_html.
+        @doc.xpath("/html/body/ul[@id='call-reverse']//li").last.inner_html.
           should == "ecruos nepo"
       end
     end
