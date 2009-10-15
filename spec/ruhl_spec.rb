@@ -214,10 +214,45 @@ describe Ruhl do
 
   describe "when no method" do
     before do
-      @html = "<p data-ruhl='nonexistant_method'>I am bad</p>"#File.read html(:debug)
+      @html = File.read html(:collection_of_strings)
+      @doc  = create_doc
     end
-    it 'should complain' do
-      lambda{ @doc  = create_doc }.should raise_error(NoMethodError)
+
+    describe "first test" do
+      it "will have 5 line items" do
+        @doc.xpath('/html/body//ul')[0].children.length.should == 10
+      end
+
+      it "will have correct content" do
+        @doc.xpath('/html/body/ul//li')[0].inner_html.should == "Object oriented"
+      end
+    end
+
+    describe "second test" do
+      it "will have 5 line items" do
+        @doc.xpath('/html/body//ul')[0].children.length.should == 10
+      end
+
+      it "will have correct content" do
+        @doc.xpath('/html/body/ul/li//span')[0].inner_html.
+          should == "Object oriented"
+      end
+    end
+
+    describe "third test" do
+      it "will have 5 line items" do
+        @doc.xpath('/html/body//ul')[0].children.length.should == 10
+      end
+
+      it "will have correct content" do
+        @doc.xpath('/html/body/ul//li')[10].inner_html.
+          should == "detneiro tcejbO"
+      end
+
+      it "last item will have correct content" do
+        @doc.xpath('/html/body/ul//li')[14].inner_html.
+          should == "ecruos nepo"
+      end
     end
   end
       
