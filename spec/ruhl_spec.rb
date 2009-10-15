@@ -202,17 +202,6 @@ describe Ruhl do
   end
   
   describe "collection_of_strings.html" do
-     before do
-       @html = File.read html(:collection_of_strings)
-     end
-
-     it "will have the string values in the li's" do
-       doc  = create_doc
-       puts doc.to_s
-     end
-   end
-
-  describe "when no method" do
     before do
       @html = File.read html(:collection_of_strings)
       @doc  = create_doc
@@ -256,6 +245,15 @@ describe Ruhl do
     end
   end
       
+  describe "when no method" do
+    before do
+      @html = "<p data-ruhl='nonexistant_method'>I am bad</p>"#File.read html(:debug)
+    end
+
+    it 'should complain' do
+      lambda{ @doc  = create_doc }.should raise_error(NoMethodError)
+    end
+  end
 end
 
 
