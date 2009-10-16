@@ -66,7 +66,9 @@ module Ruhl
       html = tag.to_html
       
       new_content = results.collect do |item|
-        if actions.length == 0 && tag.children.length == 0
+        # Call to_s on the item only if there are no other actions 
+        # and there are no other nested data-ruhls
+        if actions.length == 0 && tag.xpath('.//*[@data-ruhl]').length == 0
           t = tag.dup
           t.inner_html = item.to_s
           t

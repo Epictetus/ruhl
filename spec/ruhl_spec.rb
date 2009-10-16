@@ -213,6 +213,7 @@ describe Ruhl do
       end
 
       it "will have correct content" do
+        puts @doc.xpath("/html/body/ul[@id='call-to_s']//li").first.inner_html
         @doc.xpath("/html/body/ul[@id='call-to_s']//li").first.inner_html.should == "Object oriented"
       end
     end
@@ -221,23 +222,23 @@ describe Ruhl do
       it "will have 5 line items" do
         @doc.xpath("/html/body//ul[@id='call-upcase']").first.children.length.should == 10
       end
-
+    
       it "will have correct content" do
         @doc.xpath("/html/body/ul[@id='call-upcase']/li//span").first.inner_html.
           should == "OBJECT ORIENTED"
       end
     end
-
+    
     describe "with an additional action" do
       it "will have 5 line items" do
         @doc.xpath("/html/body//ul[@id='call-reverse']").first.children.length.should == 10
       end
-
+    
       it "will have correct content" do
         @doc.xpath("/html/body/ul[@id='call-reverse']//li").first.inner_html.
           should == "detneiro tcejbO"
       end
-
+    
       it "last item will have correct content" do
         @doc.xpath("/html/body/ul[@id='call-reverse']//li").last.inner_html.
           should == "ecruos nepo"
