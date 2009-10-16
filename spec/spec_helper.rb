@@ -19,13 +19,14 @@ end
 
 
 class TestUser
-  attr_accessor :id, :first_name, :last_name, :email
+  attr_accessor :id, :first_name, :last_name, :email, :nicknames
 
   def initialize(first, last , email = nil)
     @first_name = first
     @last_name  = last
     @email = email
     @id = rand(100)
+    @nicknames = ['Auntie','Pattern']
   end
 
   def radio_input(tag = nil)

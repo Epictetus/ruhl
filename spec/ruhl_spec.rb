@@ -209,12 +209,21 @@ describe Ruhl do
 
     describe "with no nested data-ruhls or other actions" do
       it "will have 5 line items" do
-        @doc.xpath("/html/body//ul[@id='call-to_s']").first.children.length.should == 10
+        @doc.xpath("//ul[@id='call-to_s']").first.children.length.should == 10
       end
 
       it "will have correct content" do
-        puts @doc.xpath("/html/body/ul[@id='call-to_s']//li").first.inner_html
-        @doc.xpath("/html/body/ul[@id='call-to_s']//li").first.inner_html.should == "Object oriented"
+        @doc.xpath("//ul[@id='call-to_s']//li").first.inner_html.should == "Object oriented"
+      end
+
+      describe 'called from within a _use' do
+        it "will have correct line items" do
+          @doc.xpath("/html/body//ul[@id='_use-call-to_s']/li").children.length.should == 2
+        end
+      
+        it "will have correct content" do
+          @doc.xpath("/html/body/ul[@id='_use-call-to_s']//li").first.inner_html.should == "Auntie"
+        end
       end
     end
 
