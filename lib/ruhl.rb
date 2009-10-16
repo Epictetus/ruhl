@@ -69,9 +69,8 @@ module Ruhl
         # Call to_s on the item only if there are no other actions 
         # and there are no other nested data-ruhls
         if actions.length == 0 && tag.xpath('.//*[@data-ruhl]').length == 0
-          t = tag.dup
-          t.inner_html = item.to_s
-          t
+          tag.inner_html = item.to_s
+          tag.to_html
         else
           Ruhl::Engine.new(html, :local_object => item).render(scope)
         end
