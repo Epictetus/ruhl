@@ -22,3 +22,20 @@ ActionView::Template.register_template_handler(:ruhl, Ruhl::Plugin)
 
 ActionView::Template.exempt_from_layout(:ruhl)
 
+
+module Ruhl
+  class Engine
+    private
+
+    def render_partial(tag, code)
+      file = execute_ruby(tag, code)
+
+      template = scope.view_paths.find_template(file)
+
+      raise PartialNotFoundError.new(file) unless template
+
+      render_file( template.source )
+    end
+
+  end
+end
