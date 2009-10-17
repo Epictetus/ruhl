@@ -34,7 +34,7 @@ module Ruhl
 
       raise PartialNotFoundError.new(file) unless template
 
-      render_file( template.source )
+      render_nodes Nokogiri::HTML.fragment( template.source )
     end
 
   end

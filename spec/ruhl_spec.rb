@@ -74,16 +74,11 @@ describe Ruhl do
 
     it "should replace sidebar with partial contents" do
       doc = create_doc
-      html = %{<div id="sidebar">
-<h3>Real Sidebarlinks</h3>
-<ul>
-<li><a href="#">Real Link 1</a></li>
-  <li><a href="#">Real Link 2</a></li>
-  <li><a href="#">Real Link 3</a></li>
-  <li><a href="#">Real Link 4</a></li>
-</ul>
-</div>}
-      doc.xpath('//div[@id="sidebar"]').to_s.should == html
+      doc.xpath('/html/body/div/div/div//h3')[0].inner_html.
+        should == "Real Sidebarlinks"
+
+      doc.xpath('/html/body/div/div/div/ul/li//a')[0].inner_html.
+        should == "Real Link 1"
     end
   end
 

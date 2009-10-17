@@ -42,14 +42,14 @@ module Ruhl
     private
 
     def render_with_layout
-      render_file( @layout_source || File.read(@layout) ) 
+      render_nodes Nokogiri::HTML( @layout_source || File.read(@layout) )
     end
 
     def render_partial(tag, code)
       file = execute_ruby(tag, code)
       raise PartialNotFoundError.new(file) unless File.exists?(file)
 
-      render_file( File.read(file) )
+      render_nodes Nokogiri::HTML.fragment( File.read(file) )
     end
 
     def render_collection(tag, code, actions = nil)
@@ -79,10 +79,9 @@ module Ruhl
       Ruhl::Engine.new(tag.inner_html, :block_object => bo).render(scope)
     end
 
-    def render_file(contents)
-      doc = Nokogiri::HTML( contents ) 
-      parse_doc(doc)
-      doc.to_s
+    def render_nodes(nodes)
+      parse_doc(nodes)
+      nodes.to_s
     end
 
     def parse_doc(doc)
