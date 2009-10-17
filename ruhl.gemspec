@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{ruhl}
-  s.version = "0.9.3"
+  s.version = "0.9.4"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Andrew Stone"]
-  s.date = %q{2009-10-16}
+  s.date = %q{2009-10-17}
   s.description = %q{Make your HTML dynamic with the addition of a data-ruhl attribute.}
   s.email = %q{andy@stonean.com}
   s.extra_rdoc_files = [
@@ -21,6 +21,7 @@ Gem::Specification.new do |s|
      "Rakefile",
      "VERSION",
      "lib/ruhl.rb",
+     "lib/ruhl/engine.rb",
      "lib/ruhl/errors.rb",
      "lib/ruhl/rails.rb",
      "lib/ruhl/sinatra.rb",
