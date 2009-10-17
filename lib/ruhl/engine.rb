@@ -1,10 +1,10 @@
 module Ruhl
   class Engine
     attr_reader :document, :scope, :layout, :layout_source, 
-                :local_object, :block_object
+      :local_object, :block_object
 
     def initialize(html, options = {})
-      @local_object   = options[:local_object]
+      @local_object   = options[:local_object] || options[:object]
       @block_object   = options[:block_object]
       @layout_source  = options[:layout_source]
 
@@ -198,7 +198,7 @@ Context:
   code          : #{code.inspect}
   local_object  : #{local_object.inspect}
   block_object  : #{block_object.inspect}
-  scope         : #{scope.inspect}
+  scope         : #{scope.class}
 CONTEXT
     end
   end # Engine
