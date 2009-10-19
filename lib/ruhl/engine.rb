@@ -112,7 +112,7 @@ module Ruhl
           value.strip!
           
           unless attribute =~ /^_/
-            tag[attribute] = execute_ruby(tag, value)
+            tag[attribute] = execute_ruby(tag, value).to_s
           else
             case attribute
             when "_use"
@@ -158,9 +158,9 @@ module Ruhl
       if results.is_a?(Hash)
         results.each do |key, value|
           if key == :inner_html
-            tag.inner_html = value
+            tag.inner_html = value.to_s
           else
-            tag[key.to_s] = value
+            tag[key.to_s] = value.to_s
           end
         end
       else
