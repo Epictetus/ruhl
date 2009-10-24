@@ -52,9 +52,7 @@ module Ruhl
       render_nodes Nokogiri::HTML.fragment( File.read(file) )
     end
 
-    def render_collection(tag, code, actions = nil)
-      results = execute_ruby(tag, code)
-
+    def render_collection(tag, results, actions = nil)
       actions = actions.to_s.strip
 
       tag['data-ruhl'] = actions if actions.length > 0
@@ -74,9 +72,8 @@ module Ruhl
       tag.swap(new_content)
     end
 
-    def render_block(tag, code)
-      bo = execute_ruby(tag, code) 
-      Ruhl::Engine.new(tag.inner_html, :block_object => bo).render(scope)
+    def render_block(tag, block_object)
+      Ruhl::Engine.new(tag.inner_html, :block_object => block_object).render(scope)
     end
 
     def render_nodes(nodes)
@@ -99,37 +96,54 @@ module Ruhl
     end
 
     def process_attribute(tag, code)
-      actions = code.split(',')
-      actions.dup.each_with_index do |pair, ndx|
-        attribute, value = pair.split(':')
-        
-        attribute.strip!
+      @tag_actions = code.split(',')
 
-        if value.nil?
-          results = execute_ruby(tag, attribute)
-          process_results(tag, results)
-        else
-          value.strip!
+      catch(:done) do
+        @tag_actions.dup.each_with_index do |action, ndx|
+          # Remove action from being applied twice.
+          @tag_actions.delete_at(ndx)
+
+          process_action(tag, code, action)
+        end
+      end
+    end
+
+    def process_action(tag, code, action)
+      attribute, value = action.split(':')
+      attribute.strip!
+
+      if value.nil?
+        results = execute_ruby(tag, attribute)
+        process_results(tag, results)
+      else
+        value.strip!
           
-          unless attribute =~ /^_/
-            tag[attribute] = execute_ruby(tag, value).to_s
-          else
-            case attribute
-            when "_use"
-              tag.inner_html =  render_block(tag, value)
-            when "_partial"
-              tag.inner_html = render_partial(tag, value)
-            when "_collection"
-              actions.delete_at(ndx)
-              render_collection(tag, value, actions.join(','))
-              return
-            when "_if" 
-              return unless process_if(tag, value)
-            when "_unless"
-              return if process_unless(tag, value)
-            end
+        unless attribute =~ /^_/
+          tag[attribute] = execute_ruby(tag, value).to_s
+        else
+          case attribute
+          when "_use_if"
+          when "_use_unless"
+          when "_use", "_collection"
+            process_use(tag, value)
+          when "_partial"
+            tag.inner_html = render_partial(tag, value)
+          when "_if" 
+            process_if(tag, value)
+          when "_unless"
+            process_unless(tag, value)
           end
         end
+      end
+    end
+
+    def process_use(tag, value)
+      obj = execute_ruby(tag, value) 
+      if obj.kind_of?(Enumerable) and !obj.instance_of?(String)
+        render_collection(tag, obj, @tag_actions.join(','))
+        throw :done
+      else
+        tag.inner_html =  render_block(tag, obj)
       end
     end
      
@@ -137,10 +151,9 @@ module Ruhl
       contents = execute_ruby(tag, value)
       if contents 
         process_results(tag, contents) unless contents == true
-        true
       else
         tag.remove
-        false
+        throw :done
       end
     end
 
@@ -148,9 +161,7 @@ module Ruhl
       contents = execute_ruby(tag, value)
       if contents
         tag.remove
-        true
-      else
-        false
+        throw :done
       end
     end
 
