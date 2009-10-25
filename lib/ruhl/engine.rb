@@ -120,26 +120,15 @@ module Ruhl
         process_results
       else
         if attribute =~ /^_/
-          process_ruhl(attribute)
+          send("ruhl#{attribute}")
         else
           current_tag[attribute] = call_result.to_s
         end
       end
     end
 
-    def process_ruhl(attribute)
-      case attribute
-      when "_use_if"
-        ruhl_if { ruhl_use }
-      when "_use", "_collection"
-        ruhl_use
-      when "_partial"
-        current_tag.inner_html = render_partial
-      when "_if" 
-        ruhl_if
-      when "_unless"
-        ruhl_unless
-      end
+    def ruhl_use_if
+      ruhl_if {ruhl_use } 
     end
 
     def ruhl_use
@@ -150,6 +139,8 @@ module Ruhl
         current_tag.inner_html = render_block
       end
     end
+
+    alias_method :ruhl_collection, :ruhl_use
      
     def ruhl_if
       if stop_processing?
@@ -171,6 +162,10 @@ module Ruhl
           throw :done
         end
       end
+    end
+
+    def ruhl_partial
+      current_tag.inner_html = render_partial
     end
 
     def process_results
