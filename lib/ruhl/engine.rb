@@ -118,26 +118,30 @@ module Ruhl
       else
         value.strip!
           
-        unless attribute =~ /^_/
-          tag[attribute] = execute_ruby(tag, value).to_s
+        if attribute =~ /^_/
+          process_ruhl(tag, attribute, value)
         else
-          case attribute
-          when "_use_if"
-          when "_use_unless"
-          when "_use", "_collection"
-            process_use(tag, value)
-          when "_partial"
-            tag.inner_html = render_partial(tag, value)
-          when "_if" 
-            process_if(tag, value)
-          when "_unless"
-            process_unless(tag, value)
-          end
+          tag[attribute] = execute_ruby(tag, value).to_s
         end
       end
     end
 
-    def process_use(tag, value)
+    def process_ruhl(tag, attribute, value)
+      case attribute
+      when "_use_if"
+      when "_use_unless"
+      when "_use", "_collection"
+        ruhl_use(tag, value)
+      when "_partial"
+        tag.inner_html = render_partial(tag, value)
+      when "_if" 
+        ruhl_if(tag, value)
+      when "_unless"
+        ruhl_unless(tag, value)
+      end
+    end
+
+    def ruhl_use(tag, value)
       obj = execute_ruby(tag, value) 
       if obj.kind_of?(Enumerable) and !obj.instance_of?(String)
         render_collection(tag, obj, @tag_actions.join(','))
@@ -147,21 +151,26 @@ module Ruhl
       end
     end
      
-    def process_if(tag, value)
+    def ruhl_if(tag, value)
       contents = execute_ruby(tag, value)
-      if contents 
-        process_results(tag, contents) unless contents == true
-      else
+      if stop_processing?(contents)
         tag.remove
         throw :done
+      else
+        unless contents == true || 
+                (contents.kind_of?(Enumerable) && !contents.empty?)
+          process_results(tag, contents) 
+        end
       end
     end
 
-    def process_unless(tag, value)
+    def ruhl_unless(tag, value)
       contents = execute_ruby(tag, value)
       if contents
-        tag.remove
-        throw :done
+        unless contents.kind_of?(Enumerable) && contents.empty?
+          tag.remove
+          throw :done
+        end
       end
     end
 
@@ -180,7 +189,9 @@ module Ruhl
     end
 
     def execute_ruby(tag, code)
-      unless code == '_render_'
+      if code == '_render_'
+        _render_
+      else
         if local_object && local_object.respond_to?(code)
           local_object.send(code)
         elsif block_object && block_object.respond_to?(code)
@@ -188,8 +199,6 @@ module Ruhl
         else
           scope.send(code)
         end
-      else
-        _render_
       end
     rescue NoMethodError => e
       log_context(tag,code)
@@ -199,6 +208,16 @@ module Ruhl
     def set_scope(current_scope)
       raise Ruhl::NoScopeError unless current_scope
       @scope = current_scope 
+    end
+
+    def stop_processing?(contents)
+      contents.nil? || 
+        contents == false || 
+          (contents.kind_of?(Enumerable) && contents.empty?)
+    end
+
+    def contents_empty?(contents)
+      contents.kind_of?(Enumerable) && contents.empty?
     end
 
     def log_context(tag,code)

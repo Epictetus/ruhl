@@ -82,11 +82,35 @@ describe Ruhl do
     end
   end
 
+  shared_examples_for "if with no users" do
+    it "table should not render" do
+      nodes = @doc.xpath('/html/body//*')
+      nodes.children.length.should == 2
+      nodes.children[0].to_s.should == "This is the header template"
+    end
+
+    it "no user message should render" do
+      nodes = @doc.xpath('/html/body//*')
+      nodes.children[1].to_s.should == @co.no_users_message
+    end
+  end
+
+  shared_examples_for "if with users" do
+    it "table should render" do
+      nodes = @doc.xpath('/html/body//*')
+      nodes.children.length.should > 1
+
+      table = @doc.xpath('/html/body/table/tr//td')
+      table.children[12].to_s.should == "NoMail"
+      table.children[13].to_s.should == "Man"
+    end
+  end
+
   describe "if.html" do
-    describe "no users" do
+    describe "users? is false" do
       before do
         class ContextObject
-          def users?(tag = nil)
+          def users?
             false
           end
         end
@@ -95,22 +119,13 @@ describe Ruhl do
         @doc = create_doc
       end
 
-      it "table should not render" do
-        nodes = @doc.xpath('/html/body//*')
-        nodes.children.length.should == 2
-        nodes.children[0].to_s.should == "This is the header template"
-      end
-
-      it "no user message should render" do
-        nodes = @doc.xpath('/html/body//*')
-        nodes.children[1].to_s.should == @co.no_users_message
-      end
+      it_should_behave_like "if with no users"      
     end
 
-    describe "has users" do
+    describe "users? is true" do
       before do
         class ContextObject
-          def users?(tag = nil)
+          def users?
             true
           end
         end
@@ -119,14 +134,46 @@ describe Ruhl do
         @doc = create_doc
       end
 
-      it "table should render" do
-        nodes = @doc.xpath('/html/body//*')
-        nodes.children.length.should > 1
+      it_should_behave_like "if with users"      
+    end
+  end
 
-        table = @doc.xpath('/html/body/table/tr//td')
-        table.children[12].to_s.should == "NoMail"
-        table.children[13].to_s.should == "Man"
+  describe "if_on_collection.html" do
+    describe "user_list is empty" do
+      before do
+        class ContextObject
+          def user_list
+            []
+          end
+        end
+
+        @html = File.read html(:if_on_collection)
+        @doc = create_doc
       end
+
+      it_should_behave_like "if with no users"      
+    end
+
+    describe "user_list is not empty" do
+      before do
+        class ContextObject
+          def user_list
+            [ 
+              TestUser.new('Jane', 'Doe', 'jane@stonean.com'),
+              TestUser.new('John', 'Joe', 'john@stonean.com'),
+              TestUser.new('Jake', 'Smo', 'jake@stonean.com'),
+              TestUser.new('Paul', 'Tin', 'paul@stonean.com'),
+              TestUser.new('NoMail', 'Man')
+            ]
+          end
+        end
+
+        @html = File.read html(:if_on_collection)
+        @doc = create_doc
+        puts @doc.inspect
+      end
+
+      it_should_behave_like "if with users"      
     end
   end
 
