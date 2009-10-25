@@ -130,10 +130,7 @@ module Ruhl
     def process_ruhl(attribute, value)
       case attribute
       when "_use_if"
-        ruhl_if do
-          ruhl_use
-        end
-      when "_use_unless"
+        ruhl_if { ruhl_use }
       when "_use", "_collection"
         ruhl_use
       when "_partial"
