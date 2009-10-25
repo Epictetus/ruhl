@@ -1,7 +1,7 @@
 module Ruhl
   class Engine
     attr_reader :layout, :layout_source, :local_object, :block_object
-    attr_reader :document, :scope, :call_result, :ruhl_actions
+    attr_reader :document, :scope, :current_tag, :call_result, :ruhl_actions
 
     def initialize(html, options = {})
       @local_object   = options[:local_object] || options[:object]
@@ -53,28 +53,29 @@ module Ruhl
       render_nodes Nokogiri::HTML.fragment( File.read(call_result) )
     end
 
-    def render_collection(tag)
+    def render_collection
       actions = ruhl_actions.join(",").to_s.strip if ruhl_actions
 
-      tag['data-ruhl'] = actions if actions.length > 0
-      html = tag.to_html
+      current_tag['data-ruhl'] = actions if actions.length > 0
+      html = current_tag.to_html
       
       new_content = call_result.collect do |item|
         # Call to_s on the item only if there are no other actions 
         # and there are no other nested data-ruhls
-        if actions.length == 0 && tag.xpath('.//*[@data-ruhl]').length == 0
-          tag.inner_html = item.to_s
-          tag.to_html
+        if actions.length == 0 && current_tag.xpath('.//*[@data-ruhl]').length == 0
+          current_tag.inner_html = item.to_s
+          current_tag.to_html
         else
           Ruhl::Engine.new(html, :local_object => item).render(scope)
         end
       end.to_s
 
-      tag.swap(new_content)
+      current_tag.swap(new_content)
     end
 
-    def render_block(tag)
-      Ruhl::Engine.new(tag.inner_html, :block_object => call_result).render(scope)
+    def render_block
+      Ruhl::Engine.new(current_tag.inner_html, 
+                        :block_object => call_result).render(scope)
     end
 
     def render_nodes(nodes)
@@ -89,102 +90,107 @@ module Ruhl
 
       return if nodes.empty?
 
-      tag = nodes.first
+      @current_tag = nodes.first
 
-      @ruhl_actions = tag.remove_attribute('data-ruhl').value.split(',')
+      @ruhl_actions = current_tag.remove_attribute('data-ruhl').value.split(',')
 
-      process_attribute(tag)
+      process_attribute
 
       parse_doc(doc)
     end
 
-    def process_attribute(tag)
+    def process_attribute
       catch(:done) do
         ruhl_actions.dup.each_with_index do |action, ndx|
           # Remove action from being applied twice.
           ruhl_actions.delete_at(ndx)
 
-          process_action(tag, action)
+          process_action(action)
         end
       end
     end
 
-    def process_action(tag, action)
+    def process_action(action)
       attribute, value = action.split(':')
 
       code = (value || attribute)
-      @call_result = execute_ruby(tag, code.strip)
+      @call_result = execute_ruby(code.strip)
 
       if value.nil?
-        process_results(tag)
+        process_results
       else
         if attribute =~ /^_/
-          process_ruhl(tag, attribute, value)
+          process_ruhl(attribute, value)
         else
-          tag[attribute] = call_result.to_s
+          current_tag[attribute] = call_result.to_s
         end
       end
     end
 
-    def process_ruhl(tag, attribute, value)
+    def process_ruhl(attribute, value)
       case attribute
       when "_use_if"
+        ruhl_if do
+          ruhl_use
+        end
       when "_use_unless"
       when "_use", "_collection"
-        ruhl_use(tag)
+        ruhl_use
       when "_partial"
-        tag.inner_html = render_partial
+        current_tag.inner_html = render_partial
       when "_if" 
-        ruhl_if(tag)
+        ruhl_if
       when "_unless"
-        ruhl_unless(tag)
+        ruhl_unless
       end
     end
 
-    def ruhl_use(tag)
+    def ruhl_use
       if call_result.kind_of?(Enumerable) and !call_result.instance_of?(String)
-        render_collection(tag)
+        render_collection
         throw :done
       else
-        tag.inner_html = render_block(tag)
+        current_tag.inner_html = render_block
       end
     end
      
-    def ruhl_if(tag)
+    def ruhl_if
       if stop_processing?
-        tag.remove
+        current_tag.remove
         throw :done
       else
-        unless continue_processing?
-          process_results(tag)
+        if continue_processing?
+          yield if block_given?
+        else
+          process_results
         end
       end
     end
 
-    def ruhl_unless(tag)
+    def ruhl_unless
       if call_result
         unless call_result_empty?
-          tag.remove
+          current_tag.remove
           throw :done
         end
       end
     end
 
-    def process_results(tag)
+    def process_results
       if call_result.is_a?(Hash)
         call_result.each do |key, value|
           if key == :inner_html
-            tag.inner_html = value.to_s
+            current_tag.inner_html = value.to_s
           else
-            tag[key.to_s] = value.to_s
+            current_tag[key.to_s] = value.to_s
           end
         end
       else
-        tag.inner_html = call_result.to_s
+        current_tag.inner_html = call_result.to_s
       end
     end
 
-    def execute_ruby(tag, code)
+    def execute_ruby(code)
       if code == '_render_'
         _render_
       else
@@ -197,7 +203,7 @@ module Ruhl
         end
       end
     rescue NoMethodError => e
-      log_context(tag,code)
+      log_context(code)
       raise e
     end
 
@@ -220,10 +226,10 @@ module Ruhl
       call_result.kind_of?(Enumerable) && call_result.empty?
     end
 
-    def log_context(tag,code)
+    def log_context(code)
       Ruhl.logger.error <<CONTEXT
 Context:
-  tag           : #{tag.inspect}
+  tag           : #{current_tag.inspect}
   code          : #{code.inspect}
   local_object  : #{local_object.inspect}
   block_object  : #{block_object.inspect}
