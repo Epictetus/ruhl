@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{ruhl}
-  s.version = "0.9.7"
+  s.version = "0.10.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Andrew Stone"]
-  s.date = %q{2009-10-18}
+  s.date = %q{2009-10-24}
   s.description = %q{Make your HTML dynamic with the addition of a data-ruhl attribute.}
   s.email = %q{andy@stonean.com}
   s.extra_rdoc_files = [
@@ -32,6 +32,7 @@ Gem::Specification.new do |s|
      "spec/html/fragment.html",
      "spec/html/hash.html",
      "spec/html/if.html",
+     "spec/html/if_on_collection.html",
      "spec/html/layout.html",
      "spec/html/loop.html",
      "spec/html/main_with_form.html",
@@ -40,6 +41,7 @@ Gem::Specification.new do |s|
      "spec/html/seo.html",
      "spec/html/sidebar.html",
      "spec/html/use.html",
+     "spec/html/use_if.html",
      "spec/rcov.opts",
      "spec/ruhl_spec.rb",
      "spec/spec.opts",
