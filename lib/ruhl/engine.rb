@@ -131,17 +131,17 @@ module Ruhl
       when "_use_if"
       when "_use_unless"
       when "_use", "_collection"
-        ruhl_use(tag, value)
+        ruhl_use(tag)
       when "_partial"
         tag.inner_html = render_partial
       when "_if" 
-        ruhl_if(tag, value)
+        ruhl_if(tag)
       when "_unless"
-        ruhl_unless(tag, value)
+        ruhl_unless(tag)
       end
     end
 
-    def ruhl_use(tag, value)
+    def ruhl_use(tag)
       if call_results.kind_of?(Enumerable) and !call_results.instance_of?(String)
         render_collection(tag)
         throw :done
@@ -150,7 +150,7 @@ module Ruhl
       end
     end
      
-    def ruhl_if(tag, value)
+    def ruhl_if(tag)
       if stop_processing?
         tag.remove
         throw :done
@@ -161,7 +161,7 @@ module Ruhl
       end
     end
 
-    def ruhl_unless(tag, value)
+    def ruhl_unless(tag)
       if call_results
         unless call_results_empty?
           tag.remove
