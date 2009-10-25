@@ -1,7 +1,7 @@
 module Ruhl
   class Engine
-    attr_reader :document, :scope, :layout, :layout_source, 
-      :local_object, :block_object
+    attr_reader :layout, :layout_source, :local_object, :block_object
+    attr_reader :document, :scope, :call_results, :ruhl_actions
 
     def initialize(html, options = {})
       @local_object   = options[:local_object] || options[:object]
@@ -52,8 +52,8 @@ module Ruhl
       render_nodes Nokogiri::HTML.fragment( File.read(file) )
     end
 
-    def render_collection(tag, results, actions = nil)
-      actions = actions.to_s.strip
+    def render_collection(tag, results)
+      actions = ruhl_actions.join(",").to_s.strip if ruhl_actions
 
       tag['data-ruhl'] = actions if actions.length > 0
       html = tag.to_html
@@ -89,28 +89,30 @@ module Ruhl
       return if nodes.empty?
 
       tag = nodes.first
-      code = tag.remove_attribute('data-ruhl') 
-      process_attribute(tag, code.value)
+
+      @ruhl_actions = tag.remove_attribute('data-ruhl').value.split(',')
+
+      process_attribute(tag)
 
       parse_doc(doc)
     end
 
-    def process_attribute(tag, code)
-      @tag_actions = code.split(',')
-
+    def process_attribute(tag)
       catch(:done) do
-        @tag_actions.dup.each_with_index do |action, ndx|
+        ruhl_actions.dup.each_with_index do |action, ndx|
           # Remove action from being applied twice.
-          @tag_actions.delete_at(ndx)
+          ruhl_actions.delete_at(ndx)
 
-          process_action(tag, code, action)
+          process_action(tag, action)
         end
       end
     end
 
-    def process_action(tag, code, action)
+    def process_action(tag, action)
       attribute, value = action.split(':')
       attribute.strip!
+
+      #@call_results = execute_ruby(tag, value || attribute)
 
       if value.nil?
         results = execute_ruby(tag, attribute)
@@ -144,7 +146,7 @@ module Ruhl
     def ruhl_use(tag, value)
       obj = execute_ruby(tag, value) 
       if obj.kind_of?(Enumerable) and !obj.instance_of?(String)
-        render_collection(tag, obj, @tag_actions.join(','))
+        render_collection(tag, obj)
         throw :done
       else
         tag.inner_html =  render_block(tag, obj)
