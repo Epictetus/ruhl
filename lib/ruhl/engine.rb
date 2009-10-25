@@ -120,14 +120,14 @@ module Ruhl
         process_results
       else
         if attribute =~ /^_/
-          process_ruhl(attribute, value)
+          process_ruhl(attribute)
         else
           current_tag[attribute] = call_result.to_s
         end
       end
     end
 
-    def process_ruhl(attribute, value)
+    def process_ruhl(attribute)
       case attribute
       when "_use_if"
         ruhl_if { ruhl_use }
