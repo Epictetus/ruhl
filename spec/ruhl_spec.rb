@@ -170,7 +170,6 @@ describe Ruhl do
 
         @html = File.read html(:if_on_collection)
         @doc = create_doc
-        puts @doc.inspect
       end
 
       it_should_behave_like "if with users"      
