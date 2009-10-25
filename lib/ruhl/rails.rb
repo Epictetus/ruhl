@@ -27,12 +27,10 @@ module Ruhl
   class Engine
     private
 
-    def render_partial(tag, code)
-      file = execute_ruby(tag, code)
+    def render_partial
+      template = scope.view_paths.find_template(call_result)
 
-      template = scope.view_paths.find_template(file)
-
-      raise PartialNotFoundError.new(file) unless template
+      raise PartialNotFoundError.new(call_result) unless template
 
       render_nodes Nokogiri::HTML.fragment( template.source )
     end
