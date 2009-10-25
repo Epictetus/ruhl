@@ -45,20 +45,21 @@ module Ruhl
       render_nodes Nokogiri::HTML( @layout_source || File.read(@layout) )
     end
 
-    def render_partial(tag, code)
-      file = execute_ruby(tag, code)
-      raise PartialNotFoundError.new(file) unless File.exists?(file)
+    def render_partial
+      unless File.exists?(call_results)
+        raise PartialNotFoundError.new(call_results) 
+      end
 
-      render_nodes Nokogiri::HTML.fragment( File.read(file) )
+      render_nodes Nokogiri::HTML.fragment( File.read(call_results) )
     end
 
-    def render_collection(tag, results)
+    def render_collection(tag)
       actions = ruhl_actions.join(",").to_s.strip if ruhl_actions
 
       tag['data-ruhl'] = actions if actions.length > 0
       html = tag.to_html
       
-      new_content = results.collect do |item|
+      new_content = call_results.collect do |item|
         # Call to_s on the item only if there are no other actions 
         # and there are no other nested data-ruhls
         if actions.length == 0 && tag.xpath('.//*[@data-ruhl]').length == 0
@@ -72,8 +73,8 @@ module Ruhl
       tag.swap(new_content)
     end
 
-    def render_block(tag, block_object)
-      Ruhl::Engine.new(tag.inner_html, :block_object => block_object).render(scope)
+    def render_block(tag)
+      Ruhl::Engine.new(tag.inner_html, :block_object => call_results).render(scope)
     end
 
     def render_nodes(nodes)
@@ -110,20 +111,17 @@ module Ruhl
 
     def process_action(tag, action)
       attribute, value = action.split(':')
-      attribute.strip!
 
-      #@call_results = execute_ruby(tag, value || attribute)
+      code = (value || attribute)
+      @call_results = execute_ruby(tag, code.strip)
 
       if value.nil?
-        results = execute_ruby(tag, attribute)
-        process_results(tag, results)
+        process_results(tag)
       else
-        value.strip!
-          
         if attribute =~ /^_/
           process_ruhl(tag, attribute, value)
         else
-          tag[attribute] = execute_ruby(tag, value).to_s
+          tag[attribute] = call_results.to_s
         end
       end
     end
@@ -135,7 +133,7 @@ module Ruhl
       when "_use", "_collection"
         ruhl_use(tag, value)
       when "_partial"
-        tag.inner_html = render_partial(tag, value)
+        tag.inner_html = render_partial
       when "_if" 
         ruhl_if(tag, value)
       when "_unless"
@@ -144,41 +142,37 @@ module Ruhl
     end
 
     def ruhl_use(tag, value)
-      obj = execute_ruby(tag, value) 
-      if obj.kind_of?(Enumerable) and !obj.instance_of?(String)
-        render_collection(tag, obj)
+      if call_results.kind_of?(Enumerable) and !call_results.instance_of?(String)
+        render_collection(tag)
         throw :done
       else
-        tag.inner_html =  render_block(tag, obj)
+        tag.inner_html = render_block(tag)
       end
     end
      
     def ruhl_if(tag, value)
-      contents = execute_ruby(tag, value)
-      if stop_processing?(contents)
+      if stop_processing?
         tag.remove
         throw :done
       else
-        unless contents == true || 
-                (contents.kind_of?(Enumerable) && !contents.empty?)
-          process_results(tag, contents) 
+        unless continue_processing?
+          process_results(tag)
         end
       end
     end
 
     def ruhl_unless(tag, value)
-      contents = execute_ruby(tag, value)
-      if contents
-        unless contents.kind_of?(Enumerable) && contents.empty?
+      if call_results
+        unless call_results_empty?
           tag.remove
           throw :done
         end
       end
     end
 
-    def process_results(tag, results)
-      if results.is_a?(Hash)
-        results.each do |key, value|
+    def process_results(tag)
+      if call_results.is_a?(Hash)
+        call_results.each do |key, value|
           if key == :inner_html
             tag.inner_html = value.to_s
           else
@@ -186,7 +180,7 @@ module Ruhl
           end
         end
       else
-        tag.inner_html = results.to_s
+        tag.inner_html = call_results.to_s
       end
     end
 
@@ -194,10 +188,10 @@ module Ruhl
       if code == '_render_'
         _render_
       else
-        if local_object && local_object.respond_to?(code)
-          local_object.send(code)
-        elsif block_object && block_object.respond_to?(code)
+        if block_object && block_object.respond_to?(code)
           block_object.send(code)
+        elsif local_object && local_object.respond_to?(code)
+          local_object.send(code)
         else
           scope.send(code)
         end
@@ -212,14 +206,18 @@ module Ruhl
       @scope = current_scope 
     end
 
-    def stop_processing?(contents)
-      contents.nil? || 
-        contents == false || 
-          (contents.kind_of?(Enumerable) && contents.empty?)
+    def stop_processing?
+      call_results.nil? || 
+        call_results == false || 
+          call_results_empty?
     end
 
-    def contents_empty?(contents)
-      contents.kind_of?(Enumerable) && contents.empty?
+    def continue_processing?
+      call_results == true || !call_results_empty?
+    end
+
+    def call_results_empty?
+      call_results.kind_of?(Enumerable) && call_results.empty?
     end
 
     def log_context(tag,code)
