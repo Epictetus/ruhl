@@ -69,11 +69,10 @@ describe Ruhl do
 
   shared_examples_for "having sidebar" do
     it "should replace sidebar with partial contents" do
-      doc = create_doc
-      doc.xpath('/html/body/div/div/div//h3')[0].inner_html.
+      @doc.xpath('/html/body/div/div/div//h3')[0].inner_html.
         should == "Real Sidebarlinks"
 
-      doc.xpath('/html/body/div/div/div/ul/li//a')[0].inner_html.
+      @doc.xpath('/html/body/div/div/div/ul/li//a')[0].inner_html.
         should == "Real Link 1"
     end
   end
@@ -81,6 +80,7 @@ describe Ruhl do
   describe "main_with_sidebar.html" do
     before do
       @html = File.read html(:main_with_sidebar)
+      @doc = create_doc
     end
 
     it_should_behave_like "having sidebar"      
@@ -89,9 +89,15 @@ describe Ruhl do
   describe "parameters.html" do
     before do
       @html = File.read html(:parameters)
+      @doc = create_doc
     end
 
     it_should_behave_like "having sidebar"      
+
+    it "should update the h1" do
+      puts @doc.xpath("//div[@id='main']").first.children[1].
+        inner_html.should == "Welcome to the Home page"
+    end
   end
 
   shared_examples_for "if with no users" do

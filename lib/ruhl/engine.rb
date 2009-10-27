@@ -186,7 +186,7 @@ module Ruhl
       if code == '_render_'
         _render_
       else
-        args = code.strip.split(' ')
+        args = code.strip.split('|').collect{|p| p.strip}
 
         if block_object.respond_to?(code)
           block_object.send(*args)

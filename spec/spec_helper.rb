@@ -65,6 +65,10 @@ class ContextObject
     html(name.to_sym)
   end
 
+  def page_title(page)
+    "Welcome to the #{page}"
+  end
+
   def sidebar_partial
     html(:sidebar)
   end
