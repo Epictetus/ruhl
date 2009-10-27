@@ -186,12 +186,14 @@ module Ruhl
       if code == '_render_'
         _render_
       else
-        if block_object && block_object.respond_to?(code)
-          block_object.send(code)
-        elsif local_object && local_object.respond_to?(code)
-          local_object.send(code)
+        args = code.strip.split(' ')
+
+        if block_object.respond_to?(code)
+          block_object.send(*args)
+        elsif local_object.respond_to?(code)
+          local_object.send(*args)
         else
-          scope.send(code)
+          scope.send(*args)
         end
       end
     rescue NoMethodError => e

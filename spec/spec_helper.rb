@@ -61,6 +61,10 @@ class ContextObject
     "hello from my content."
   end
 
+  def partial(name)
+    html(name.to_sym)
+  end
+
   def sidebar_partial
     html(:sidebar)
   end
