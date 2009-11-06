@@ -327,15 +327,39 @@ describe Ruhl do
     end
   end
       
+  describe "special.html" do
+    before do
+      @html = File.read html(:special)
+      @doc  = create_doc
+    end
+
+    it "will convert entities" do
+      ps = @doc.xpath("/html/body//p")
+      ps[0].inner_html.should == "Here is a space&nbsp;and another&nbsp;one."
+      ps[1].inner_html.should == "RuHL &copy; 2009"
+    end
+  end
+
   describe "when no method" do
     before do
-      @html = "<p data-ruhl='nonexistant_method'>I am bad</p>"#File.read html(:debug)
+      @html = "<p data-ruhl='nonexistant_method'>I am bad</p>"
     end
 
     it 'should complain' do
       lambda{ @doc  = create_doc }.should raise_error(NoMethodError)
     end
   end
+
+  describe "when no partial" do
+    before do
+      @html = "<p data-ruhl='_partial: partial|no file'>I am bad</p>"#File.read html(:debug)
+    end
+
+    it 'should complain' do
+      lambda{ @doc  = create_doc }.should raise_error(Ruhl::PartialNotFoundError)
+    end
+  end
+
 end
 
 
