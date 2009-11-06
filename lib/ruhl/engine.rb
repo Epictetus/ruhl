@@ -1,7 +1,5 @@
 module Ruhl
   class Engine
-    Opt = Nokogiri::XML::ParseOptions
-
     attr_reader :layout, :layout_source, :local_object, :block_object
     attr_reader :document, :scope, :current_tag, :call_result, :ruhl_actions
 
@@ -18,7 +16,7 @@ module Ruhl
         @document = Nokogiri::HTML.fragment(html)
       else
 
-        @document = Nokogiri::HTML(html, nil,nil, Opt::RECOVER | Opt::NOERROR | Opt::NOWARNING)
+        @document = Nokogiri::HTML(html)
       end
     end
 

@@ -335,8 +335,8 @@ describe Ruhl do
 
     it "will convert entities" do
       ps = @doc.xpath("/html/body//p")
-      ps[0].inner_html.to_s.should == "Here is a space&nbsp;and another&nbsp;one."
-      ps[1].inner_html.to_s.should == "RuHL &copy; 2009"
+      ps[0].to_s.should == "<p>Here is a space&nbsp;and another&nbsp;one.</p>"
+      ps[1].to_s.should == "<p>RuHL &copy; 2009</p>"
     end
   end
 
