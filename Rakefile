@@ -23,7 +23,7 @@ begin
     gemspec.email = "andy@stonean.com"
     gemspec.homepage = "http://github.com/stonean/ruhl"
     gemspec.authors = ["Andrew Stone"]
-    gemspec.add_dependency('nokogiri','>=1.3.3')
+    gemspec.add_dependency('nokogiri','=1.4.0')
     gemspec.add_development_dependency('rspec')
   end
   Jeweler::GemcutterTasks.new
