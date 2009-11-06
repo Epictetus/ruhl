@@ -334,9 +334,15 @@ describe Ruhl do
     end
 
     it "will convert entities" do
-      ps = @doc.xpath("/html/body//p")
-      ps[0].to_s.should == "<p>Here is a space&nbsp;and another&nbsp;one.</p>"
-      ps[1].to_s.should == "<p>RuHL &copy; 2009</p>"
+      ps = @doc.xpath("/html/body/p")
+      ps.to_s.should == "<p>Here is a space&nbsp;and another&nbsp;one.</p><p>RuHL &copy; 2009</p>"
+      #ps[0].inner_html.should == "Here is a space&nbsp;and another&nbsp;one."
+      #ps[1].inner_html.should == "RuHL &copy; 2009"
+
+      # To verify everything is correct, I did it the old fashioned way
+      # File.open('test.html',"w") do |f|
+      #   f << @doc.to_s
+      # end
     end
   end
 
