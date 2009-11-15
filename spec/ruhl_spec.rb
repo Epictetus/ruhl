@@ -327,6 +327,23 @@ describe Ruhl do
     end
   end
       
+
+  
+  describe "collection_of_hashes.html" do
+    describe "user_list is not empty" do
+      before do
+        @html = File.read html(:collection_of_hashes)
+        @doc = create_doc
+      end
+
+
+      it "should have option for each state" do
+        options = @doc.xpath('/html/body/select//option')
+        options.children.length.should == @co.state_options.length
+      end
+    end
+  end
+
   describe "special.html" do
     before do
       @html = File.read html(:special)

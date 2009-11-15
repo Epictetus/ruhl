@@ -61,14 +61,20 @@ module Ruhl
       html = current_tag.to_html
       
       new_content = call_result.collect do |item|
-        # Call to_s on the item only if there are no other actions 
-        # and there are no other nested data-ruhls
+        
         if actions.length == 0 && current_tag.xpath('.//*[@data-ruhl]').length == 0
-          current_tag.inner_html = item.to_s
-          current_tag.to_html
+          if item.is_a?(Hash)
+            t = current_tag.dup
+            apply_hash(t, item)
+            t.to_html
+          else
+            current_tag.inner_html = item.to_s
+            current_tag.to_html
+          end
         else
           Ruhl::Engine.new(html, :local_object => item).render(scope)
         end
+
       end.to_s
 
       current_tag.swap(new_content)
@@ -171,15 +177,19 @@ module Ruhl
 
     def process_results
       if call_result.is_a?(Hash)
-        call_result.each do |key, value|
-          if key == :inner_html
-            current_tag.inner_html = value.to_s
-          else
-            current_tag[key.to_s] = value.to_s
-          end
-        end
-      else
+        apply_hash(current_tag, call_result)
+     else
         current_tag.inner_html = call_result.to_s
+      end
+    end
+
+    def apply_hash(tag, hash)
+      hash.each do |key, value|
+        if key == :inner_html
+          tag.inner_html = value.to_s
+        else
+          tag[key.to_s] = value.to_s
+        end
       end
     end
 

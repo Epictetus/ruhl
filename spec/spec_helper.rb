@@ -149,6 +149,60 @@ class ContextObject
       state.new('WY', 'Wyoming')]
   end
 
+  def state_options
+    [ {:value => 'AL', :inner_html => 'Alabama'},
+      {:value => 'AK', :inner_html => 'Alaska'},
+      {:value => 'AZ', :inner_html => 'Arizona'},
+      {:value => 'AR', :inner_html => 'Arkansas'},
+      {:value => 'CA', :inner_html => 'California'},
+      {:value => 'CO', :inner_html => 'Colorado'},
+      {:value => 'CT', :inner_html => 'Connecticut'},
+      {:value => 'DE', :inner_html => 'Delaware'},
+      {:value => 'FL', :inner_html => 'Florida'},
+      {:value => 'GA', :inner_html => 'Georgia'},
+      {:value => 'HI', :inner_html => 'Hawaii'},
+      {:value => 'ID', :inner_html => 'Idaho'},
+      {:value => 'IL', :inner_html => 'Illinois'},
+      {:value => 'IN', :inner_html => 'Indiana'},
+      {:value => 'IA', :inner_html => 'Iowa'},
+      {:value => 'KS', :inner_html => 'Kansas'},
+      {:value => 'KY', :inner_html => 'Kentucky'},
+      {:value => 'LA', :inner_html => 'Louisiana'},
+      {:value => 'ME', :inner_html => 'Maine'},
+      {:value => 'MD', :inner_html => 'Maryland'},
+      {:value => 'MA', :inner_html => 'Massachusetts'},
+      {:value => 'MI', :inner_html => 'Michigan'},
+      {:value => 'MN', :inner_html => 'Minnesota'},
+      {:value => 'MS', :inner_html => 'Mississippi'},
+      {:value => 'MO', :inner_html => 'Missouri'},
+      {:value => 'MT', :inner_html => 'Montana'},
+      {:value => 'NE', :inner_html => 'Nebraska'},
+      {:value => 'NV', :inner_html => 'Nevada'},
+      {:value => 'NH', :inner_html => 'New Hampshire'},
+      {:value => 'NJ', :inner_html => 'New Jersey'},
+      {:value => 'NM', :inner_html => 'New Mexico'},
+      {:value => 'NY', :inner_html => 'New York'},
+      {:value => 'NC', :inner_html => 'North Carolina'},
+      {:value => 'ND', :inner_html => 'North Dakota'},
+      {:value => 'OH', :inner_html => 'Ohio'},
+      {:value => 'OK', :inner_html => 'Oklahoma'},
+      {:value => 'OR', :inner_html => 'Oregon'},
+      {:value => 'PA', :inner_html => 'Pennsylvania'},
+      {:value => 'RI', :inner_html => 'Rhode Island'},
+      {:value => 'SC', :inner_html => 'South Carolina'},
+      {:value => 'SD', :inner_html => 'South Dakota'},
+      {:value => 'TN', :inner_html => 'Tennessee'},
+      {:value => 'TX', :inner_html => 'Texas'},
+      {:value => 'UT', :inner_html => 'Utah'},
+      {:value => 'VT', :inner_html => 'Vermont'},
+      {:value => 'VA', :inner_html => 'Virginia'},
+      {:value => 'WA', :inner_html => 'Washington'},
+      {:value => 'WV', :inner_html => 'West Virginia'},
+      {:value => 'WI', :inner_html => 'Wisconsin'},
+      {:value => 'WY', :inner_html => 'Wyoming'}]
+  end
+
+
 end
 
 def points_of_interest
