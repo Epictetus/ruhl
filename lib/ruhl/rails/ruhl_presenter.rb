@@ -16,7 +16,7 @@ end
 module ActionController
   class Base    
     def presenter_for(obj)
-      eval("#{obj.class.name}Presenter").new(obj,self)
+      eval("#{obj.class.name}Presenter").new(obj, @template)
     end
     
     helper_method :presenter_for   
