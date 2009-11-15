@@ -1,4 +1,5 @@
 require 'ruhl'
+require 'ruhl/rails/ruhl_presenter'
 
 module Ruhl
   class Plugin < ActionView::TemplateHandler
