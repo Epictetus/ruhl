@@ -352,8 +352,8 @@ describe Ruhl do
 
     it "will convert entities" do
       ps = @doc.xpath("/html/body/p")
-      ps[0].inner_html.should =~ /^Here is a space&nbsp;and another&nbsp;one.$/
-      ps[1].inner_html.should == "RuHL &copy; 2009"
+      ps[0].inner_html.should == "Here is a space and another one."
+      ps[1].inner_html.should == "RuHL © 2009"
 
       # To verify everything is correct, I did it the old fashioned way
       # File.open('test.html',"w") do |f|

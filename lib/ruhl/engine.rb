@@ -15,9 +15,10 @@ module Ruhl
       if @layout || @local_object || @block_object
         @document = Nokogiri::HTML.fragment(html)
       else
-
         @document = Nokogiri::HTML(html)
+        @document.encoding = Ruhl.encoding
       end
+
     end
 
     def render(current_scope)
@@ -28,7 +29,7 @@ module Ruhl
       if @layout
         render_with_layout 
       else
-        document.to_s
+        document.to_s.gsub(/\302\240/, ' ')
       end
     end
 

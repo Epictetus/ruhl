@@ -7,9 +7,10 @@ require 'ruhl/errors'
 
 module Ruhl
   class << self
-    attr_accessor :logger
+    attr_accessor :logger, :encoding
   end
 
   self.logger = Logger.new(STDOUT)
 
+  self.encoding = 'UTF8'
 end
