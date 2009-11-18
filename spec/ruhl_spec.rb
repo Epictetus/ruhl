@@ -362,6 +362,18 @@ describe Ruhl do
     end
   end
 
+  describe "swap.html" do
+    before do
+      @html = File.read html(:swap)
+      @doc  = create_doc
+    end
+
+    it "will convert entities" do
+      ps = @doc.xpath("/html/body/p")
+      ps.inner_html.should == "The programming language, Ruby, is awesome."
+    end
+  end
+
   describe "when no method" do
     before do
       @html = "<p data-ruhl='nonexistant_method'>I am bad</p>"

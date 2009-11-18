@@ -175,6 +175,10 @@ module Ruhl
       current_tag.inner_html = render_partial
     end
 
+    def ruhl_swap
+      current_tag.swap(call_result)
+    end
+
     def process_results
       if call_result.is_a?(Hash)
         apply_hash(current_tag, call_result)

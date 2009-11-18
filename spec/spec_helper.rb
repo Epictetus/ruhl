@@ -41,6 +41,10 @@ end
 
 
 class ContextObject
+  def language
+    'Ruby'
+  end
+
   def generate_h1
     "data from presenter"     
   end
