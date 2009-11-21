@@ -4,8 +4,8 @@ require 'ruhl/rails/helper'
 module Ruhl
   module Rails
     class Presenter
-      include ActiveRecord
-      include FormHelper
+      include Ruhl::Rails::ActiveRecord
+      include Ruhl::Rails::Helper
   
       attr_reader :presentee, :context
   
