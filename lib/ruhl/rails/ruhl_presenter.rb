@@ -50,7 +50,7 @@ module ActionController
     end
 
     def presenter_for(obj)
-      eval("#{obj.class.name}Presenter").new(obj, @template)
+      Object.const_get("#{obj.class.name}Presenter").new(obj, @template)
     end
     
     helper_method :presenter_for   
