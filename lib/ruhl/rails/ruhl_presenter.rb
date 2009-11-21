@@ -9,10 +9,14 @@ module Ruhl
   
       attr_reader :presentee, :context
   
-      def initialize(obj, context)
-        @presentee = obj
+      def initialize(context, obj = nil)
         @context = context
-        define_paths(obj.class.name.underscore.downcase)
+
+        # May only want to use the form helper
+        if obj
+          @presentee = obj
+          define_paths(obj.class.name.underscore.downcase)
+        end
       end
     
       def method_missing(name, *args)
@@ -44,15 +48,22 @@ module ActionController
 
     protected
 
-    def present(object_sym, action_sym)
+    def present(action_sym = action_name, object = nil)
+      object_sym = controller_name.singularize unless object
+
       render  :template => "#{object_sym.to_s.pluralize}/#{action_sym}", 
-        :locals => {:object => presenter_for( instance_variable_get("@#{object_sym}") )}    
+        :locals => {:object => presenter_for(object_sym) }    
     end
 
-    def presenter_for(obj)
-      Object.const_get("#{obj.class.name}Presenter").new(obj, @template)
+    def presenter_for(object_sym)
+      # Set instance variable if it exists
+      if instance_variables.include?("@#{object_sym}")
+        obj = instance_variable_get("@#{object_sym}")
+      end
+
+      Object.const_get("#{object_sym.to_s.camelize}Presenter").new(@template, obj)
     end
-    
+
     helper_method :presenter_for   
   end
 end
