@@ -8,27 +8,6 @@ module ActiveRecordPresenter
     presentee.errors.full_messages
   end
   
-  def method_missing(name, *args)
-    if presentee.respond_to?(name)
-      # Pass presenter method call to model so you don't have to
-      # redefine every model method in the presenter class.
-      presentee.send(name, *args)
-    elsif context.respond_to?(name)
-      # Instead of saying context.link_to('Some site', some_path)
-      # can just use link_to
-      context.send(name, *args)
-    end
-  end
-
-  # Extend scope of respond_to? to model.
-  def respond_to?(name)  
-    if super
-      true
-    else
-      presentee.respond_to?(name)
-    end
-  end
-  
   def define_paths(model)
     define_action(model, 'show')                      # show_path(@user)
     define_action(model, 'update')                    # update_path(@user)
