@@ -210,9 +210,9 @@ module Ruhl
       else
         args = code.strip.split('|').collect{|p| p.strip}
 
-        if block_object.respond_to?(code)
+        if block_object.respond_to?(args.first)
           block_object.send(*args)
-        elsif local_object.respond_to?(code)
+        elsif local_object.respond_to?(args.first)
           local_object.send(*args)
         else
           scope.send(*args)
