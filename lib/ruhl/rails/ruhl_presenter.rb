@@ -2,7 +2,8 @@ require 'ruhl/rails/active_record_presenter'
 
 class RuhlPresenter
   include ActiveRecordPresenter
-
+  include FormHelper
+  
   attr_reader :presentee, :context
   
   def initialize(obj, context)
@@ -10,7 +11,7 @@ class RuhlPresenter
     @context = context
     define_paths(obj.class.name.underscore.downcase)
   end
-  
+    
   def method_missing(name, *args)
     if presentee.respond_to?(name)
       # Pass presenter method call to model so you don't have to
