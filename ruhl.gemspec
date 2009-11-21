@@ -5,7 +5,7 @@
 
 Gem::Specification.new do |s|
   s.name = %q{ruhl}
-  s.version = "0.16.0"
+  s.version = "0.17.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Andrew Stone"]
@@ -28,6 +28,7 @@ Gem::Specification.new do |s|
      "lib/ruhl/rails/helper.rb",
      "lib/ruhl/rails/ruhl_presenter.rb",
      "lib/ruhl/sinatra.rb",
+     "ruhl.gemspec",
      "spec/html/basic.html",
      "spec/html/collection_of_hashes.html",
      "spec/html/collection_of_strings.html",
@@ -36,6 +37,7 @@ Gem::Specification.new do |s|
      "spec/html/hash.html",
      "spec/html/if.html",
      "spec/html/if_on_collection.html",
+     "spec/html/if_with_hash.html",
      "spec/html/layout.html",
      "spec/html/loop.html",
      "spec/html/main_with_form.html",
