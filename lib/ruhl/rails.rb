@@ -11,8 +11,10 @@ module Ruhl
     def render(template, options = {})
       layout = @action_view.controller.send(:active_layout)
 
-      options[:layout]        = layout.filename
-      options[:layout_source] = layout.source
+      if layout
+        options[:layout]        = layout.filename 
+        options[:layout_source] = layout.source
+      end
 
       Ruhl::Engine.new(template.source, options).render(@action_view)
     end

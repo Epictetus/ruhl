@@ -49,9 +49,9 @@ module ActionController
     protected
 
     def present(action_sym = action_name, object = nil)
-      object_sym = controller_name.singularize unless object
+      object_sym = object || controller_name.singularize
 
-      render  :template => "#{object_sym.to_s.pluralize}/#{action_sym}", 
+      render  :template => "#{controller_name}/#{action_sym}", 
         :locals => {:object => presenter_for(object_sym) }    
     end
 
