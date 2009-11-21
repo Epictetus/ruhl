@@ -95,7 +95,7 @@ describe Ruhl do
     it_should_behave_like "having sidebar"      
 
     it "should update the h1" do
-      puts @doc.xpath("//div[@id='main']").first.children[1].
+      @doc.xpath("//div[@id='main']").first.children[1].
         inner_html.should == "Welcome to the Home page"
     end
   end
@@ -154,6 +154,27 @@ describe Ruhl do
 
       it_should_behave_like "if with users"      
     end
+
+    describe "hash returned" do
+      before do
+        class ContextObject
+          def users?
+            true
+          end
+        end
+
+        @html = File.read html(:if_with_hash)
+        @doc = create_doc
+      end
+
+      it "should use hash appropriately" do
+        ptag = @doc.xpath("/html/body/p").first
+        ptag["class"].should == "pretty"
+        ptag["id"].should == "8675309"
+        ptag.inner_html.should=="jenny"
+      end
+    end
+
   end
 
   describe "if_on_collection.html" do

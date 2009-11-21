@@ -156,16 +156,22 @@ module Ruhl
         throw :done
       else
         if continue_processing?
+          # yield if block given. otherwise do nothing and have ruhl
+          # continue processing
           yield if block_given?
         else
-          process_results
+          if block_given?
+            yield
+          else
+            process_results
+          end
         end
       end
     end
 
     def ruhl_unless
       if call_result
-        unless call_result_empty?
+        unless call_result_empty_array?
           current_tag.remove
           throw :done
         end
@@ -225,15 +231,19 @@ module Ruhl
     def stop_processing?
       call_result.nil? || 
         call_result == false || 
-          call_result_empty?
+          call_result_empty_array?
     end
 
     def continue_processing?
-      call_result == true || !call_result_empty?
+      call_result == true || call_result_populated_array?
     end
 
-    def call_result_empty?
-      call_result.kind_of?(Enumerable) && call_result.empty?
+    def call_result_populated_array?
+      call_result.kind_of?(Array) && !call_result.empty?
+
+    end
+    def call_result_empty_array?
+      call_result.kind_of?(Array) && call_result.empty?
     end
 
     def log_context(code)

@@ -206,6 +206,9 @@ class ContextObject
       {:value => 'WY', :inner_html => 'Wyoming'}]
   end
 
+  def hash_value
+    {:class => "pretty", :id => "8675309", :inner_html => "jenny"}
+  end
 
 end
 
