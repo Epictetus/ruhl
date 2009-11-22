@@ -55,13 +55,20 @@ module ActionController
         :locals => {:object => presenter_for(object_sym) }    
     end
 
-    def presenter_for(object_sym)
-      # Set instance variable if it exists
-      if instance_variables.include?("@#{object_sym}")
-        obj = instance_variable_get("@#{object_sym}")
+    def presenter_for(object)
+
+      if object.is_a?(Symbol) || object.is_a?(String)
+        # Set instance variable if it exists
+        if instance_variables.include?("@#{object}")
+          obj = instance_variable_get("@#{object}")
+        end
+        name = object.to_s.camelize
+      else
+        name = object.class.name.camelize
+        obj = object
       end
 
-      Object.const_get("#{object_sym.to_s.camelize}Presenter").new(@template, obj)
+      Object.const_get("#{name}Presenter").new(@template, obj)
     end
 
     helper_method :presenter_for   
