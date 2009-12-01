@@ -28,6 +28,7 @@ Gem::Specification.new do |s|
      "lib/ruhl/rails/helper.rb",
      "lib/ruhl/rails/ruhl_presenter.rb",
      "lib/ruhl/rspec/rails.rb",
+     "lib/ruhl/rspec/sinatra.rb",
      "lib/ruhl/sinatra.rb",
      "ruhl.gemspec",
      "spec/html/basic.html",
