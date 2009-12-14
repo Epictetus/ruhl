@@ -140,7 +140,7 @@ module Ruhl
     end
 
     def ruhl_use
-      if call_result.kind_of?(Enumerable) and !call_result.instance_of?(String)
+      if call_result.kind_of?(Array)
         render_collection
         throw :done
       else
