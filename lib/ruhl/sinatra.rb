@@ -27,3 +27,19 @@ module Sinatra
     end
   end
 end
+
+module Ruhl
+  class Engine
+    private
+
+    def render_partial
+      views = scope.class.views || "./views"
+
+      data, filename, line = scope.send :lookup_template, :ruhl, call_result.to_sym, views
+
+      raise PartialNotFoundError.new(call_result) unless data
+
+      render_nodes Nokogiri::HTML.fragment(data) 
+    end
+  end
+end
