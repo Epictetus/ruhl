@@ -140,7 +140,7 @@ module Ruhl
       Ruhl.logger.error "Current tag: #{current_tag.inspect}"
       Ruhl.logger.error "Exception message: #{nme.message}"
       Ruhl.logger.error "Exception backtrace: #{nme.backtrace.join("\n")}"
-      raise e
+      raise nme
     end
 
     def ruhl_use_if
@@ -226,11 +226,11 @@ module Ruhl
           scope.send(*args)
         end
       end
-    rescue NoMethodError => e
-      Ruhl.logger.error(e.message)
-      Ruhl.logger.error(e.backtrace.join("\n"))
+    rescue NoMethodError => nme
+      Ruhl.logger.error(nme.message)
+      Ruhl.logger.error(nme.backtrace.join("\n"))
       log_context(code)
-      raise e
+      raise nme
     end
 
     def set_scope(current_scope)
