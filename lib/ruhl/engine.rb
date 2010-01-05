@@ -97,7 +97,7 @@ module Ruhl
       end
 
       return if nodes.empty?
-
+  
       @current_tag = nodes.first
 
       @ruhl_actions = current_tag.remove_attribute('data-ruhl').value.split(',')
@@ -133,10 +133,18 @@ module Ruhl
           current_tag[attribute] = call_result.to_s
         end
       end
+    rescue Exception => e
+      Ruhl.logger.error "Processing Ruhl: #{action}"
+      Ruhl.logger.error "Current tag.to_s: #{current_tag.to_s}"
+      Ruhl.logger.error "Current tag: #{current_tag.inspect}"
+      Ruhl.logger.error "Exception class: #{e.class}"
+      Ruhl.logger.error "Exception message: #{e.message}"
+      Ruhl.logger.error "Exception backtrace: #{e.backtrace.join("\n")}"
+      raise e
     end
 
     def ruhl_use_if
-      ruhl_if {ruhl_use } 
+      ruhl_if{ ruhl_use } 
     end
 
     def ruhl_use
@@ -219,6 +227,8 @@ module Ruhl
         end
       end
     rescue NoMethodError => e
+      Ruhl.logger.error(e.message)
+      Ruhl.logger.error(e.backtrace.join("\n"))
       log_context(code)
       raise e
     end
