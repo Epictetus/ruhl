@@ -82,8 +82,9 @@ module Ruhl
     end
 
     def render_block
-      Ruhl::Engine.new(current_tag.inner_html, 
-                        :block_object => call_result).render(scope)
+      Ruhl::Engine.
+        new(current_tag.inner_html, :block_object => call_result).
+        render(scope)
     end
 
     def render_nodes(nodes)
@@ -133,13 +134,12 @@ module Ruhl
           current_tag[attribute] = call_result.to_s
         end
       end
-    rescue Exception => e
+    rescue NoMethodError => nme
       Ruhl.logger.error "Processing Ruhl: #{action}"
       Ruhl.logger.error "Current tag.to_s: #{current_tag.to_s}"
       Ruhl.logger.error "Current tag: #{current_tag.inspect}"
-      Ruhl.logger.error "Exception class: #{e.class}"
-      Ruhl.logger.error "Exception message: #{e.message}"
-      Ruhl.logger.error "Exception backtrace: #{e.backtrace.join("\n")}"
+      Ruhl.logger.error "Exception message: #{nme.message}"
+      Ruhl.logger.error "Exception backtrace: #{nme.backtrace.join("\n")}"
       raise e
     end
 
