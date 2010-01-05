@@ -58,12 +58,12 @@ module Ruhl
     def render_collection
       actions = ruhl_actions.join(",").to_s.strip if ruhl_actions
 
-      current_tag['data-ruhl'] = actions if actions.length > 0
+      current_tag['data-ruhl'] = actions unless actions.empty?
       html = current_tag.to_html
       
       new_content = call_result.collect do |item|
         
-        if actions.length == 0 && current_tag.xpath('.//*[@data-ruhl]').length == 0
+        if actions.empty? && current_tag.xpath('.//*[@data-ruhl]').empty?
           if item.is_a?(Hash)
             t = current_tag.dup
             apply_hash(t, item)
