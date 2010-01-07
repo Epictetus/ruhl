@@ -217,13 +217,13 @@ module Ruhl
         _render_
       else
         args = code.strip.split('|').collect{|p| p.strip}
-
-        if block_object.respond_to?(args.first)
-          block_object.send(*args)
-        elsif local_object.respond_to?(args.first)
-          local_object.send(*args)
-        else
-          scope.send(*args)
+        objects = [block_object,local_object,scope]
+        index = -1
+        begin
+          index = index + 1
+          objects[index].send(*args)
+        rescue NoMethodError => e
+          index < 2 ? retry : raise(e)
         end
       end
     rescue NoMethodError => nme
