@@ -257,14 +257,27 @@ module Ruhl
     end
 
     def log_context(code)
-      Ruhl.logger.error <<CONTEXT
+      error_message = <<CONTEXT
 Context:
   tag           : #{current_tag.inspect}
   code          : #{code.inspect}
-  local_object  : #{local_object.inspect}
-  block_object  : #{block_object.inspect}
-  scope         : #{scope.class}
 CONTEXT
+
+      error_message << "  #{show_class_or_inspect('local_object')}\n"
+      error_message << "  #{show_class_or_inspect('block_object')}\n"
+      error_message << "  #{show_class_or_inspect('scope')}\n"
+
+      Ruhl.logger.error error_message
+    end
+
+    def show_class_or_inspect(object_str)
+      str = "#{object_str}   : "
+
+      str + if Ruhl.send("inspect_#{object_str}")
+              send(object_str).inspect
+            else
+              send(object_str).class.to_s
+            end
     end
   end # Engine
 end # Ruhl
