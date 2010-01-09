@@ -20,15 +20,13 @@ module Ruhl
       end
     
       def method_missing(name, *args)
-        if presentee.respond_to?(name)
-          # Pass presenter method call to model so you don't have to
-          # redefine every model method in the presenter class.
-          presentee.send(name, *args)
-        elsif context.respond_to?(name)
-          # Instead of saying context.link_to('Some site', some_path)
-          # can just use link_to
-          context.send(name, *args)
-        end
+        # Pass presenter method call to model so you don't have to
+        # redefine every model method in the presenter class.
+        presentee.__send__(name, *args)
+      rescue NoMethodError 
+        # Instead of saying context.link_to('Some site', some_path)
+        # can just use link_to
+        context.__send__(name, *args)
       end
 
       # Extend scope of respond_to? to model.
