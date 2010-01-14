@@ -7,8 +7,11 @@ module Ruhl
 
         ruby = <<-RUBY
           before do
-            f = File.basename("#{caller[0].split(':').first}")
-            f = "#{app.views}/" + f.sub('_spec.rb','')
+            origin = "#{caller[0].split(':').first}"
+
+            f = origin.sub(/\\/spec\\//,'/app/')
+            f = f.sub('_spec.rb','')
+
             @view_nodes = Nokogiri::HTML.fragment(File.read(f))
           end
 
