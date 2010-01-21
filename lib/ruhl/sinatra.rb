@@ -30,7 +30,20 @@ end
 
 module Ruhl
   class Engine
+
     private
+
+    def render_with_layout
+      if @layout_source
+       data = @layout_source
+      else
+        views = scope.class.views || "./views"
+        data, filename, line = scope.send(:lookup_template, :ruhl, @layout.to_sym, views)
+      end
+
+     render_nodes Nokogiri::HTML(data)
+    end
+
 
     def render_partial
       views = scope.class.views || "./views"
