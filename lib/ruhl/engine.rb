@@ -6,11 +6,9 @@ module Ruhl
     def initialize(html, options = {})
       @local_object   = options[:local_object] || options[:object]
       @block_object   = options[:block_object]
+      @layout         = options[:layout]
       @layout_source  = options[:layout_source]
 
-      if @layout = options[:layout]
-        raise LayoutNotFoundError.new(@layout) unless File.exists?(@layout)
-      end
 
       if @layout || @local_object || @block_object
         @document = Nokogiri::HTML.fragment(html)
@@ -44,6 +42,8 @@ module Ruhl
     private
 
     def render_with_layout
+      raise LayoutNotFoundError.new(@layout) unless File.exists?(@layout)
+
       render_nodes Nokogiri::HTML( @layout_source || File.read(@layout) )
     end
 
