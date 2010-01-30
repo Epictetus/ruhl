@@ -9,7 +9,12 @@ module Ruhl
     end
     
     def render(template, options = {})
-      layout_template = @action_view.controller.active_layout(options[:layout])
+      if layout = options[:layout]
+        layout_template = @action_view.controller.send(:find_layout, layout, 
+                                                        @action_view.controller.send(:default_template_format) )
+      else
+        layout_template = @action_view.controller.active_layout
+      end
 
       if layout_template
         options[:layout]        = layout_template.filename 
