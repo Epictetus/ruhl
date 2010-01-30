@@ -46,11 +46,16 @@ module ActionController
 
     protected
 
-    def present(action_sym = action_name, object = nil)
-      object_sym = object || controller_name.singularize
+    def present(options = {})
+      action_sym = options[:action] || action_name
+      object_sym = options[:object] || controller_name.singularize
 
-      render  :template => "#{controller_name}/#{action_sym}", 
-        :locals => {:object => presenter_for(object_sym) }    
+      params = { :template => "#{controller_name}/#{action_sym}", 
+                 :locals => {:object => presenter_for(object_sym) } }
+
+      params[:layout] = options[:layout] if options.has_key?(:layout)
+
+      render params
     end
 
     def presenter_for(object)
