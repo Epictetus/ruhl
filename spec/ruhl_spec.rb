@@ -362,6 +362,11 @@ describe Ruhl do
         options = @doc.xpath('/html/body/select//option')
         options.children.length.should == @co.state_options.length
       end
+
+      it "should have selected Georgia" do
+        state = @doc.xpath('/html/body/select//option[@selected]')
+        state[0]['value'].should == "GA"
+      end
     end
   end
 

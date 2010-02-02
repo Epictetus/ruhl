@@ -163,7 +163,7 @@ class ContextObject
       {:value => 'CT', :inner_html => 'Connecticut'},
       {:value => 'DE', :inner_html => 'Delaware'},
       {:value => 'FL', :inner_html => 'Florida'},
-      {:value => 'GA', :inner_html => 'Georgia'},
+      {:value => 'GA', :inner_html => 'Georgia', :selected => true},
       {:value => 'HI', :inner_html => 'Hawaii'},
       {:value => 'ID', :inner_html => 'Idaho'},
       {:value => 'IL', :inner_html => 'Illinois'},
