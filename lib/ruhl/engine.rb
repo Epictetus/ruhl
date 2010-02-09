@@ -64,7 +64,7 @@ module Ruhl
       new_content = call_result.collect do |item|
         
         if actions.empty? && current_tag.xpath('.//*[@data-ruhl]').empty?
-          if item.is_a?(Hash)
+          if item.kind_of?(Hash)
             t = current_tag.dup
             apply_hash(t, item)
             t.to_html
@@ -195,7 +195,7 @@ module Ruhl
     end
 
     def process_results
-      if call_result.is_a?(Hash)
+      if call_result.kind_of?(Hash)
         apply_hash(current_tag, call_result)
      else
         current_tag.inner_html = call_result.to_s
