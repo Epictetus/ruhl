@@ -280,9 +280,17 @@ CONTEXT
             end
     end
 
-    def file_contents(path_to_file)
-      File.open(path_to_file, "r:#{Ruhl.encoding}") do |f|
-        f.read
+    if RUBY_VERSION == '1.8.6'
+      def file_contents(path_to_file)
+        File.open(path_to_file,'r') do |f|
+          f.read
+        end
+      end
+    else
+      def file_contents(path_to_file)
+        File.open(path_to_file, "r:#{Ruhl.encoding}") do |f|
+          f.read
+        end
       end
     end
   end # Engine
