@@ -44,7 +44,7 @@ module Ruhl
     def render_with_layout
       raise LayoutNotFoundError.new(@layout) unless File.exists?(@layout)
 
-      render_nodes Nokogiri::HTML( @layout_source || File.read(@layout) )
+      render_nodes Nokogiri::HTML( @layout_source || file_contents(@layout) )
     end
 
     def render_partial
@@ -52,7 +52,7 @@ module Ruhl
         raise PartialNotFoundError.new(call_result) 
       end
 
-      render_nodes Nokogiri::HTML.fragment( File.read(call_result) )
+      render_nodes Nokogiri::HTML.fragment( file_contents(call_result) )
     end
 
     def render_collection
@@ -278,6 +278,12 @@ CONTEXT
             else
               send(object_str).class.to_s
             end
+    end
+
+    def file_contents(path_to_file)
+      File.open(path_to_file, "r:#{Ruhl.encoding}") do |f|
+        f.read
+      end
     end
   end # Engine
 end # Ruhl
