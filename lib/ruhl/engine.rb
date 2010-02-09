@@ -230,8 +230,20 @@ module Ruhl
           return call_to(obj, args) rescue NoMethodError
         end
 
+        if Ruhl.use_instance_variables
+          # No luck so far, lets see if code is actually an instance
+          # variable.  
+          ivar = :"@#{code}"
+          if scope.instance_variable_defined?(ivar)
+            if Ruhl.log_instance_variable_warning
+              Ruhl.logger.warn("Ruhl did NOT find a method named: #{code} but did find and is using: @#{code}")
+            end
+            return scope.instance_variable_get(ivar)
+          end
+        end
+
         log_context(code)
-        raise NoMethodError.new("method #{args.first} not found")
+        raise NoMethodError.new("Neither method nor instance variable found: #{args.first}")
       end
     end
 

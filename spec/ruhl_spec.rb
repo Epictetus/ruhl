@@ -67,7 +67,6 @@ describe Ruhl do
     it 'should set href from hash' do
       doc = create_doc
       rows = doc.xpath("/html/body/ul[@id='ruby_urls']/li//a")
-      puts rows.to_s
       rows[0].inner_html.should == 'Ruby Lang'
       rows[0]['href'].should == 'http://ruby-lang.org'
       rows[1].inner_html.should == 'RubyonRails'
@@ -76,6 +75,18 @@ describe Ruhl do
       rows[2]['href'].should == 'http://rubyflow.com'
       rows[3].inner_html.should == 'RubyTrends'
       rows[3]['href'].should == 'http://rubytrends.com'
+    end
+
+    it 'should use instance variable' do
+      doc = create_doc
+      p = doc.xpath("/html/body/p[@id='time']")
+      p.inner_html.should == 'It is now Peanut Butter Jelly time'
+    end
+
+    it 'should not use instance variable' do
+      Ruhl.use_instance_variables = false
+      lambda{ create_doc }.should raise_error(NoMethodError)
+      Ruhl.use_instance_variables = true
     end
   end
 

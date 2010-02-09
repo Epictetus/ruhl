@@ -47,6 +47,10 @@ end
 
 
 class ContextObject
+  def initialize
+    @time = 'Peanut Butter Jelly'
+  end
+
   def language
     'Ruby'
   end
