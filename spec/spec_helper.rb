@@ -216,6 +216,14 @@ class ContextObject
     {:class => "pretty", :id => "8675309", :inner_html => "jenny"}
   end
 
+  def ruby_urls
+    [
+      {:name => 'Ruby Lang', :href => 'http://ruby-lang.org'},
+      {'name' => 'RubyonRails', :href => 'http://rubyonrails.com'},
+      {:name => 'RubyFlow', 'href' => 'http://rubyflow.com'},
+      {'name' => 'RubyTrends', 'href' => 'http://rubytrends.com'}
+    ]
+  end
 end
 
 def points_of_interest

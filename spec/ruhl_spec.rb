@@ -63,6 +63,20 @@ describe Ruhl do
         row['class'].should =~ /^user_data user_\d+$/
       end
     end
+
+    it 'should set href from hash' do
+      doc = create_doc
+      rows = doc.xpath("/html/body/ul[@id='ruby_urls']/li//a")
+      puts rows.to_s
+      rows[0].inner_html.should == 'Ruby Lang'
+      rows[0]['href'].should == 'http://ruby-lang.org'
+      rows[1].inner_html.should == 'RubyonRails'
+      rows[1]['href'].should == 'http://rubyonrails.com'
+      rows[2].inner_html.should == 'RubyFlow'
+      rows[2]['href'].should == 'http://rubyflow.com'
+      rows[3].inner_html.should == 'RubyTrends'
+      rows[3]['href'].should == 'http://rubytrends.com'
+    end
   end
 
   describe "fragment.html" do

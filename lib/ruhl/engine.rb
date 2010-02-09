@@ -226,19 +226,21 @@ module Ruhl
       else
         args = code.strip.split('|').collect{|p| p.strip}
 
-        if block_object.respond_to?(args.first)
-          block_object.send(*args)
-        elsif local_object.respond_to?(args.first)
-          local_object.send(*args)
-        else
-          scope.send(*args)
+        [block_object, local_object, scope].compact.each do |obj|
+          return call_to(obj, args) rescue NoMethodError
         end
+
+        log_context(code)
+        raise NoMethodError.new("method #{args.first} not found")
       end
-    rescue NoMethodError => nme
-      Ruhl.logger.error(nme.message)
-      Ruhl.logger.error(nme.backtrace.join("\n"))
-      log_context(code)
-      raise nme
+    end
+
+    def call_to(object, args)
+      if object.kind_of?(Hash) && ( object.has_key?(args.first) || object.has_key?(args.first.to_sym))
+        object[args.first] || object[args.first.to_sym]
+      else
+        object.send(*args)
+      end
     end
 
     def set_scope(current_scope)
@@ -258,8 +260,8 @@ module Ruhl
 
     def call_result_populated_array?
       call_result.kind_of?(Array) && !call_result.empty?
-
     end
+
     def call_result_empty_array?
       call_result.kind_of?(Array) && call_result.empty?
     end
