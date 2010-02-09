@@ -35,24 +35,33 @@ describe Ruhl do
     end
   end
 
-  describe "medium.html" do
+  describe "combination.html" do
     before do
-      @html = File.read html(:medium)
-      @doc = create_doc
+      @html = File.read html(:combination)
     end
 
-    it "first data row should equal first user " do
-      table = @doc.xpath('/html/body/table/tr//td')
+    it 'first data row should equal first user' do
+      doc = create_doc
+      table = doc.xpath('/html/body/table/tbody/tr//td')
       table.children[0].to_s.should == "Jane"
       table.children[1].to_s.should == "Doe"
       table.children[2].to_s.should == "jane@stonean.com"
     end
 
-    it "last data row should equal last user " do
-      table = @doc.xpath('/html/body/table/tr//td')
+    it 'last data row should equal last user' do
+      doc = create_doc
+      table = doc.xpath('/html/body/table/tbody/tr//td')
       table.children[9].to_s.should == "Paul"
       table.children[10].to_s.should == "Tin"
       table.children[11].to_s.should == "paul@stonean.com"
+    end
+
+    it 'should append user_id to class' do
+      doc = create_doc
+      rows = doc.xpath('/html/body/table/tbody//tr')
+      rows.each do |row|
+        row['class'].should =~ /^user_data user_\d+$/
+      end
     end
   end
 

@@ -30,8 +30,12 @@ class TestUser
   end
 
   def radio_input
-    { :inner_html => first_name, :id => "user_#{id.to_s}", 
+    { :inner_html => first_name, :id => user_id, 
       :name => "user[id]", :value => last_name.downcase}
+  end
+
+  def user_id
+    "user_#{id}"
   end
 end
  

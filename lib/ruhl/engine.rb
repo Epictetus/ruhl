@@ -131,7 +131,7 @@ module Ruhl
         if attribute =~ /^_/
           send("ruhl#{attribute}")
         else
-          current_tag[attribute] = call_result.to_s
+          write_tag_attribute(current_tag, attribute, call_result)
         end
       end
     rescue NoMethodError => nme
@@ -207,8 +207,16 @@ module Ruhl
         if key == :inner_html
           tag.inner_html = value.to_s
         else
-          tag[key.to_s] = value.to_s
+          write_tag_attribute(tag, key.to_s, value)
         end
+      end
+    end
+
+    def write_tag_attribute(tag, attribute, value)
+      if tag[attribute] && attribute.downcase == 'class'
+        tag[attribute] = "#{tag[attribute]} #{value}"
+      else
+        tag[attribute] = value.to_s
       end
     end
 
