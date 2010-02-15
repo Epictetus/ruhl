@@ -48,7 +48,7 @@ module ActionController
 
     def present(options = {})
       action_sym      = options[:action] || action_name
-      object_sym      = options[:object] || controller_name.singularize
+      object_sym      = options[:object] || options[:controller] || controller_name.singularize
       controller_sym  = options[:controller] || controller_name
 
 
