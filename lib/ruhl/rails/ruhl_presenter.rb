@@ -47,13 +47,16 @@ module ActionController
     protected
 
     def present(options = {})
-      action_sym      = options[:action] || action_name
-      object_sym      = options[:object] || options[:controller] || controller_name.singularize
-      controller_sym  = options[:controller] || controller_name
+      controller_option = options.delete(:controller)
 
+      action_sym      = options.delete(:action) || action_name
+      object_sym      = options.delete(:object) || controller_option || controller_name.singularize
+      controller_sym  = controller_option || controller_name
 
-      render :template => "#{controller_sym}/#{action_sym}", 
-                 :locals => {:object => presenter_for(object_sym), :layout => options[:layout] } 
+      options[:template] = "#{controller_sym}/#{action_sym}"
+      options[:locals] = {:object => presenter_for(object_sym), :layout => options.delete(:layout) }
+
+      render options 
     end
 
     def presenter_for(object)
