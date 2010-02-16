@@ -231,19 +231,20 @@ module Ruhl
         end
 
         if Ruhl.use_instance_variables
-          # No luck so far, lets see if code is actually an instance
+          calling = args.first
+          # No luck so far, lets see if calling is actually an instance
           # variable.  
-          ivar = :"@#{code}"
+          ivar = :"@#{calling}"
           if scope.instance_variable_defined?(ivar)
             if Ruhl.log_instance_variable_warning
-              Ruhl.logger.warn("Ruhl did NOT find a method named: #{code} but did find and is using: @#{code}")
+              Ruhl.logger.warn("Ruhl did NOT find a method named: #{calling} but did find and is using: @#{calling}")
             end
             return scope.instance_variable_get(ivar)
           end
         end
 
         log_context(code)
-        raise NoMethodError.new("Neither method nor instance variable found: #{args.first}")
+        raise NoMethodError.new("Neither method nor instance variable found: #{calling}")
       end
     end
 
