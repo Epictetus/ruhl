@@ -1,7 +1,7 @@
 module Ruhl
   class Engine
     attr_reader :layout, :layout_source, :local_object, :block_object
-    attr_reader :document, :scope, :current_tag, :call_result, :ruhl_actions
+    attr_reader :document, :scope, :current_tag, :original_tag, :call_result, :ruhl_actions
 
     def initialize(html, options = {})
       @local_object   = options[:local_object] || options[:object]
@@ -65,9 +65,9 @@ module Ruhl
         
         if actions.empty? && current_tag.xpath('.//*[@data-ruhl]').empty?
           if item.kind_of?(Hash)
-            t = current_tag.dup
-            apply_hash(t, item)
-            t.to_html
+            duped_tag = current_tag.dup
+            apply_hash(duped_tag, item)
+            duped_tag.to_html
           else
             current_tag.inner_html = item.to_s
             current_tag.to_html
@@ -100,6 +100,7 @@ module Ruhl
       return if nodes.empty?
   
       @current_tag = nodes.first
+      @original_tag = @current_tag.dup
 
       @ruhl_actions = current_tag.remove_attribute('data-ruhl').value.split(',')
 
@@ -134,13 +135,6 @@ module Ruhl
           write_tag_attribute(current_tag, attribute, call_result)
         end
       end
-    rescue NoMethodError => nme
-      Ruhl.logger.error "Processing Ruhl: #{action}"
-      Ruhl.logger.error "Current tag.to_s: #{current_tag.to_s}"
-      Ruhl.logger.error "Current tag: #{current_tag.inspect}"
-      Ruhl.logger.error "Exception message: #{nme.message}"
-      Ruhl.logger.error "Exception backtrace: #{nme.backtrace.join("\n")}"
-      raise nme
     end
 
     def ruhl_use_if
@@ -159,11 +153,11 @@ module Ruhl
     alias_method :ruhl_collection, :ruhl_use
      
     def ruhl_if
-      if stop_processing?
+      if call_result.nil? || call_result == false || call_result_empty_array?
         current_tag.remove
         throw :done
       else
-        if continue_processing?
+        if call_result == true || call_result_populated_array?
           # yield if block given. otherwise do nothing and have ruhl
           # continue processing
           yield if block_given?
@@ -224,16 +218,16 @@ module Ruhl
       if code == '_render_'
         _render_
       else
-        args = code.strip.split('|').collect{|p| p.strip}
+        args = code.strip.split('|').collect{|part| part.strip}
 
-        [block_object, local_object, scope].compact.each do |obj|
-          return call_to(obj, args) rescue NoMethodError
+        for obj in [block_object, local_object, scope].compact do
+          call_status, result = call_to(obj, args)
+          return result if call_status == :success
         end
 
         if Ruhl.use_instance_variables
           calling = args.first
-          # No luck so far, lets see if calling is actually an instance
-          # variable.  
+          # No luck so far, lets see if calling is actually an instance variable.  
           ivar = :"@#{calling}"
           if scope.instance_variable_defined?(ivar)
             if Ruhl.log_instance_variable_warning
@@ -243,32 +237,23 @@ module Ruhl
           end
         end
 
-        log_context(code)
-        raise NoMethodError.new("Neither method nor instance variable found: #{calling}")
+        raise NoMethodError.new( current_context(code) ) 
       end
     end
 
     def call_to(object, args)
       if object.kind_of?(Hash) && ( object.has_key?(args.first) || object.has_key?(args.first.to_sym))
-        object[args.first] || object[args.first.to_sym]
+        return :success, object[args.first] || object[args.first.to_sym]
       else
-        object.send(*args)
+        if object.respond_to?(args.first)
+          return :success, object.send(*args)
+        end
       end
     end
 
     def set_scope(current_scope)
       raise Ruhl::NoScopeError unless current_scope
       @scope = current_scope 
-    end
-
-    def stop_processing?
-      call_result.nil? || 
-        call_result == false || 
-          call_result_empty_array?
-    end
-
-    def continue_processing?
-      call_result == true || call_result_populated_array?
     end
 
     def call_result_populated_array?
@@ -279,40 +264,25 @@ module Ruhl
       call_result.kind_of?(Array) && call_result.empty?
     end
 
-    def log_context(code)
-      error_message = <<CONTEXT
+    def current_context(code)
+<<CONTEXT
+
 Context:
-  tag           : #{current_tag.inspect}
-  code          : #{code.inspect}
+  trying to execute : #{code.inspect}
+  on tag            : #{original_tag.to_s}
 CONTEXT
-
-      error_message << "  #{show_class_or_inspect('local_object')}\n"
-      error_message << "  #{show_class_or_inspect('block_object')}\n"
-      error_message << "  #{show_class_or_inspect('scope')}\n"
-
-      Ruhl.logger.error error_message
-    end
-
-    def show_class_or_inspect(object_str)
-      str = "#{object_str}   : "
-
-      str + if Ruhl.send("inspect_#{object_str}")
-              send(object_str).inspect
-            else
-              send(object_str).class.to_s
-            end
     end
 
     if RUBY_VERSION == '1.8.6'
       def file_contents(path_to_file)
-        File.open(path_to_file,'r') do |f|
-          f.read
+        File.open(path_to_file,'r') do |file|
+          file.read
         end
       end
     else
       def file_contents(path_to_file)
-        File.open(path_to_file, "r:#{Ruhl.encoding}") do |f|
-          f.read
+        File.open(path_to_file, "r:#{Ruhl.encoding}") do |file|
+          file.read
         end
       end
     end
