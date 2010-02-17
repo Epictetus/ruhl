@@ -41,10 +41,6 @@ class TestUser
   end
 end
  
-def user
-  TestUser.new('Jane', 'Doe', 'jane@stonean.com')
-end
-
 
 class ContextObject
   def initialize
@@ -228,8 +224,13 @@ class ContextObject
       {'name' => 'RubyTrends', 'href' => 'http://rubytrends.com'}
     ]
   end
-end
 
-def points_of_interest
-  [ "Object oriented", "dynamic", "mixins", "blocks", "open source"]
-end
+  def user
+    TestUser.new('Jane', 'Doe', 'jane@stonean.com')
+  end
+
+  def points_of_interest
+    [ "Object oriented", "dynamic", "mixins", "blocks", "open source"]
+  end
+end # context object
+
