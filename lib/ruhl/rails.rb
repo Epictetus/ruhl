@@ -9,11 +9,14 @@ module Ruhl
     end
     
     def render(template, options = {})
-      if layout = options[:layout]
+      layout = options[:layout]
+      if layout
         layout_template = @action_view.controller.send(:find_layout, layout, 
-                                                        @action_view.controller.send(:default_template_format) )
+                                                       @action_view.controller.send(:default_template_format) )
       else
-        layout_template = @action_view.controller.active_layout
+        unless layout == false
+          layout_template = @action_view.controller.active_layout
+        end
       end
 
       if layout_template
