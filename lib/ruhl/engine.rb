@@ -100,7 +100,7 @@ module Ruhl
       return if nodes.empty?
   
       @current_tag = nodes.first
-      @original_tag = @current_tag.dup
+      @original_tag = @current_tag.to_html
 
       @ruhl_actions = current_tag.remove_attribute('data-ruhl').value.split(',')
 
@@ -269,7 +269,7 @@ module Ruhl
 
 Context:
   trying to execute : #{code.inspect}
-  on tag            : #{original_tag.to_s}
+  on tag            : #{original_tag}
 CONTEXT
     end
 
